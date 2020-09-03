@@ -8,7 +8,7 @@ ava('boolean → false', (t) => {
                 foo: {type: 'boolean', alias: 'a', description: 'foo'},
             },
             [''],
-        ),
+        ).args,
         {foo: false},
     );
 });
@@ -19,7 +19,7 @@ ava('boolean → true', (t) => {
                 foo: {type: 'boolean', alias: 'a', description: 'foo'},
             },
             ['--foo'],
-        ),
+        ).args,
         {foo: true},
     );
 });
@@ -30,7 +30,7 @@ ava('boolean → true (alias)', (t) => {
                 foo: {type: 'boolean', alias: 'a', description: 'foo'},
             },
             ['-a'],
-        ),
+        ).args,
         {foo: true},
     );
 });
@@ -85,7 +85,7 @@ ava('string → bar', (t) => {
                 foo: {type: 'string', alias: 'a', description: 'foo'},
             },
             ['--foo', 'bar'],
-        ),
+        ).args,
         {foo: 'bar'},
     );
 });
@@ -96,7 +96,7 @@ ava('string → bar (alias)', (t) => {
                 foo: {type: 'string', alias: 'a', description: 'foo'},
             },
             ['-a', 'bar'],
-        ),
+        ).args,
         {foo: 'bar'},
     );
 });
@@ -118,7 +118,7 @@ ava('string? → undefined', (t) => {
                 foo: {type: 'string?', alias: 'a', description: 'foo'},
             },
             [''],
-        ),
+        ).args,
         {foo: undefined},
     );
 });
@@ -140,7 +140,7 @@ ava('string? → bar', (t) => {
                 foo: {type: 'string?', alias: 'a', description: 'foo'},
             },
             ['--foo', 'bar'],
-        ),
+        ).args,
         {foo: 'bar'},
     );
 });
@@ -151,7 +151,7 @@ ava('string? → bar (alias)', (t) => {
                 foo: {type: 'string?', alias: 'a', description: 'foo'},
             },
             ['-a', 'bar'],
-        ),
+        ).args,
         {foo: 'bar'},
     );
 });
@@ -173,7 +173,7 @@ ava('string[] → bar1', (t) => {
                 foo: {type: 'string[]', alias: 'a', description: 'foo'},
             },
             ['--foo', 'bar1'],
-        ),
+        ).args,
         {foo: ['bar1']},
     );
 });
@@ -184,7 +184,7 @@ ava('string[] → bar1 bar2 bar3', (t) => {
                 foo: {type: 'string[]', alias: 'a', description: 'foo'},
             },
             ['--foo', 'bar1', '-a', 'bar2', '--foo', 'bar3'],
-        ),
+        ).args,
         {foo: ['bar1', 'bar2', 'bar3']},
     );
 });
@@ -217,7 +217,7 @@ ava('string[]? → []', (t) => {
                 foo: {type: 'string[]?', alias: 'a', description: 'foo'},
             },
             [''],
-        ),
+        ).args,
         {foo: []},
     );
 });

@@ -146,7 +146,7 @@ export type CLIArgumentMap<T extends CLIArgumentDefinitionMap> = {
 export const parseCLIArguments = <T extends CLIArgumentDefinitionMap>(
     definitionMap: T,
     args: Array<string>,
-): CLIArgumentMap<T> => {
+): {args: CLIArgumentMap<T>, definition: T} => {
     const result: Record<string, string | Array<string> | boolean | undefined> = {};
     for (const name of Object.keys(definitionMap)) {
         const definition = definitionMap[name];
@@ -171,7 +171,10 @@ export const parseCLIArguments = <T extends CLIArgumentDefinitionMap>(
         }
     }
     if (validateParseResult(definitionMap, result)) {
-        return result;
+        return {
+            args: result,
+            definition: definitionMap,
+        };
     }
     throw new Error(`InvalidInput: ${util.inspect(result)}`);
 };
