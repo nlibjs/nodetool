@@ -24,8 +24,13 @@
         "src",
         "!*.test.*"
     ],
+    "bin": {
+        "indexen": "./lib/indexen-cli.js"
+    },
     "scripts": {
         "build": "tsc",
+        "build:indexen": "ts-node src/indexen-cli.ts -d src -o src/index.ts",
+        "build:tsc": "tsc",
         "test": "ava",
         "lint": "eslint --ext .ts src"
     },
