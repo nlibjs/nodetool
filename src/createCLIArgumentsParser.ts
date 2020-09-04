@@ -12,7 +12,7 @@ export const listMarkerIndex = function* (
             yield index;
         }
     }
-}
+};
 
 export const getBoolean = (
     props: {
@@ -122,6 +122,16 @@ export const validateParseResult = <T extends CLIArgumentDefinitionMap>(
     return true;
 };
 
+export const listMarkers = function* (
+    name: string,
+    definition: CLIArgumentDefinition,
+): Generator<string> {
+    yield `--${name}`;
+    if (definition.alias) {
+        yield `-${definition.alias}`;
+    }
+};
+
 export interface CLIArgumentDefinition {
     readonly type: 'boolean' | 'string' | 'string[]' | 'string?' | 'string[]?',
     readonly description: string,
@@ -129,8 +139,8 @@ export interface CLIArgumentDefinition {
 }
 
 export interface CLIArgumentDefinitionMap {
-    readonly [key: string]: CLIArgumentDefinition;
-};
+    readonly [key: string]: CLIArgumentDefinition,
+}
 
 export type CLIArgumentValue<T extends CLIArgumentDefinition> =
 T['type'] extends 'boolean' ? boolean
@@ -143,38 +153,45 @@ export type CLIArgumentMap<T extends CLIArgumentDefinitionMap> = {
     [K in keyof T]: CLIArgumentValue<T[K]>;
 };
 
-export const parseCLIArguments = <T extends CLIArgumentDefinitionMap>(
+export interface CLIArgumentsParser<T extends CLIArgumentDefinitionMap> {
+    readonly definition: T,
+    (args: Array<string>): CLIArgumentMap<T>,
+}
+
+export const createCLIArgumentsParser = <T extends CLIArgumentDefinitionMap>(
     definitionMap: T,
-    args: Array<string>,
-): {args: CLIArgumentMap<T>, definition: T} => {
-    const result: Record<string, string | Array<string> | boolean | undefined> = {};
-    for (const name of Object.keys(definitionMap)) {
-        const definition = definitionMap[name];
-        const markers = [`--${name}`, ...(definition.alias ? [`-${definition.alias}`] : [])];
-        switch (definition.type) {
-        case 'boolean':
-            result[name] = getBoolean({name, markers, args});
-            break;
-        case 'string':
-            result[name] = getString({name, markers, args, optional: false});
-            break;
-        case 'string?':
-            result[name] = getString({name, markers, args, optional: true});
-            break;
-        default:
-            result[name] = getStringArray({
-                name,
-                markers,
-                args,
-                optional: definition.type.endsWith('?'),
-            });
+) => Object.defineProperty(
+    (
+        args: Array<string>,
+    ) => {
+        const result: Record<string, string | Array<string> | boolean | undefined> = {};
+        for (const name of Object.keys(definitionMap)) {
+            const definition = definitionMap[name];
+            const markers = [...listMarkers(name, definition)];
+            switch (definition.type) {
+            case 'boolean':
+                result[name] = getBoolean({name, markers, args});
+                break;
+            case 'string':
+                result[name] = getString({name, markers, args, optional: false});
+                break;
+            case 'string?':
+                result[name] = getString({name, markers, args, optional: true});
+                break;
+            default:
+                result[name] = getStringArray({
+                    name,
+                    markers,
+                    args,
+                    optional: definition.type.endsWith('?'),
+                });
+            }
         }
-    }
-    if (validateParseResult(definitionMap, result)) {
-        return {
-            args: result,
-            definition: definitionMap,
-        };
-    }
-    throw new Error(`InvalidInput: ${util.inspect(result)}`);
-};
+        if (validateParseResult(definitionMap, result)) {
+            return result;
+        }
+        throw new Error(`InvalidInput: ${util.inspect(result)}`);
+    },
+    'definition',
+    {value: definitionMap},
+) as CLIArgumentsParser<T>;
