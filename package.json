@@ -25,7 +25,8 @@
         "!*.test.*"
     ],
     "bin": {
-        "indexen": "./lib/indexen-cli.js"
+        "indexen": "./lib/indexen-cli.js",
+        "resolve-imports": "./lib/resolve-imports-cli.js"
     },
     "scripts": {
         "build": "tsc",
@@ -67,7 +68,17 @@
         ],
         "rules": {
             "@nlib/no-globals": "off"
-        }
+        },
+        "overrides": [
+            {
+                "files": [
+                    "./src/resolve-imports.ts"
+                ],
+                "rules": {
+                    "@typescript-eslint/no-base-to-string": "off"
+                }
+            }
+        ]
     },
     "commitlint": {
         "extends": [
