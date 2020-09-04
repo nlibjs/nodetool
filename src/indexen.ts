@@ -2,10 +2,10 @@ import * as path from 'path';
 import {listFiles} from './listFiles';
 
 export const indexen = async function* (
-    {directory, quote, include}: {
+    {directory, include, quote = '\''}: {
         directory: string,
-        quote: '\'' | '"' | '`',
         include: (file: string) => boolean,
+        quote?: '\'' | '"' | '`',
     },
 ): AsyncGenerator<string> {
     for await (const file of listFiles(directory)) {
