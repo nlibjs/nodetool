@@ -2,7 +2,11 @@ import * as path from 'path';
 import {listFiles} from './listFiles';
 
 export const indexen = async function* (
-    {directory, include, quote = '\''}: {
+    {
+        directory,
+        include,
+        quote = '\'',
+    }: {
         directory: string,
         include: (file: string) => boolean,
         quote?: '\'' | '"' | '`',
