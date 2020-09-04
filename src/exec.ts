@@ -7,8 +7,9 @@ export interface ExecResult {
 
 export const exec = async (
     command: string,
+    options: childProcess.ExecOptions = {},
 ): Promise<ExecResult> => await new Promise<ExecResult>((resolve, reject) => {
-    childProcess.exec(command, (error, stdout, stderr) => {
+    childProcess.exec(command, options, (error, stdout, stderr) => {
         if (error) {
             reject(error);
         } else {
