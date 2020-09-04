@@ -193,5 +193,5 @@ export const createCLIArgumentsParser = <T extends CLIArgumentDefinitionMap>(
         throw new Error(`InvalidInput: ${util.inspect(result)}`);
     },
     'definition',
-    definitionMap,
+    {value: definitionMap},
 ) as CLIArgumentsParser<T>;

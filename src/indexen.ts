@@ -15,5 +15,4 @@ export const indexen = async function* (
             yield `${quote};\n`;
         }
     }
-    yield '\n';
 };
