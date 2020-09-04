@@ -4,6 +4,7 @@ import * as acorn from 'acorn';
 import * as walk from 'acorn-walk';
 import MagicString from 'magic-string';
 import {listFiles} from './listFiles';
+import {normalizeSlash} from './normalizeSlash';
 
 interface Literal extends acorn.Node {
     raw: string,
@@ -18,10 +19,10 @@ export const resolveImport = (
     importee: string,
     directory: string,
 ): string => {
-    let relative = path.relative(
+    let relative = normalizeSlash(path.relative(
         fs.realpathSync(directory),
         require.resolve(path.join(directory, importee)),
-    );
+    ));
     if (!relative.startsWith('.')) {
         relative = `./${relative}`;
     }

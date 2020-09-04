@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import * as path from 'path';
 import {isMatch} from 'picomatch';
+import {normalizeSlash} from './normalizeSlash';
 
 export interface FileFilter {
     (file: string): boolean,
@@ -23,7 +23,7 @@ export const createFileFilter = (
     const includePattern = extendPatterns(...extensions.map((ext) => `*${ext}`), ...include);
     const excludePattern = extendPatterns(...exclude);
     return (file) => {
-        const normalized = file.split(path.sep).join('/');
+        const normalized = normalizeSlash(file);
         return isMatch(normalized, includePattern) && !isMatch(normalized, excludePattern);
     };
 };
