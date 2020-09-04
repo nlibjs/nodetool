@@ -7,6 +7,7 @@ import {createCLIArgumentsParser} from './createCLIArgumentsParser';
 import {serializeDefinitionMap} from './serializeDefinitionMap';
 import {getVersion} from './getVersion';
 import {createFileFilter} from './createFileFilter';
+import {normalizeSlash} from './normalizeSlash';
 
 const parse = createCLIArgumentsParser({
     input: {
@@ -63,7 +64,7 @@ export const indexenCLI = async (
             output,
             include: createFileFilter({
                 ext: props.ext.length ? props.ext : ['.js', '.ts', '.cjs', '.mjs'],
-                exclude: (props.exclude.length ? props.exclude : defaultExcludePatterns).concat(output),
+                exclude: (props.exclude.length ? props.exclude : defaultExcludePatterns).concat(normalizeSlash(output)),
             }),
         };
         const stream = fs.createWriteStream(params.output);
