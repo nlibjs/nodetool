@@ -25,7 +25,8 @@
         "!*.test.*"
     ],
     "bin": {
-        "indexen": "./lib/indexen-cli.js"
+        "indexen": "./lib/indexen-cli.js",
+        "resolve-imports": "./lib/resolve-imports-cli.js"
     },
     "scripts": {
         "build": "tsc",
@@ -39,6 +40,7 @@
         "@commitlint/config-conventional": "^9.1.2",
         "@nlib/eslint-config": "^3.17.9",
         "@types/eslint": "^7.2.2",
+        "@types/picomatch": "^2.2.1",
         "@typescript-eslint/eslint-plugin": "^4.0.1",
         "@typescript-eslint/parser": "^4.0.1",
         "ava": "^3.12.1",
@@ -66,7 +68,17 @@
         ],
         "rules": {
             "@nlib/no-globals": "off"
-        }
+        },
+        "overrides": [
+            {
+                "files": [
+                    "./src/resolve-imports.ts"
+                ],
+                "rules": {
+                    "@typescript-eslint/no-base-to-string": "off"
+                }
+            }
+        ]
     },
     "commitlint": {
         "extends": [
@@ -98,5 +110,11 @@
             ":label(dependencies)",
             ":automergeMinor"
         ]
+    },
+    "dependencies": {
+        "acorn": "^8.0.1",
+        "acorn-walk": "^8.0.0",
+        "magic-string": "^0.25.7",
+        "picomatch": "^2.2.2"
     }
 }

@@ -5,26 +5,70 @@ import * as stream from 'stream';
 import ava from 'ava';
 import {indexenCLI, indexenHeader} from './indexen-cli';
 
+const getLines = (
+    source: string,
+): Array<string> => source
+.split('\n')
+.sort((a, b) => a < b ? -1 : 1);
+
 ava('generate index', async (t) => {
     const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'indexen'));
     await afs.writeFile(path.join(directory, 'a.js'), '');
+    await afs.writeFile(path.join(directory, 'a.d.ts'), '');
     await afs.mkdir(path.join(directory, 'b'));
     await afs.writeFile(path.join(directory, 'b/b.js'), '');
-    await afs.writeFile(path.join(directory, 'b/c.js'), '');
+    await afs.writeFile(path.join(directory, 'b/c.ts'), '');
+    await afs.writeFile(path.join(directory, 'b/d.js'), '');
+    await afs.writeFile(path.join(directory, 'b/e.cjs'), '');
+    await afs.writeFile(path.join(directory, 'b/f.mjs'), '');
     const output = path.join(directory, 'index.js');
-    const expected = new Set([
+    const expected = [
+        '',
         indexenHeader,
         'export * from \'./a\';',
-        'export * from \'./b/c\';',
         'export * from \'./b/b\';',
-        '',
-    ]);
+        'export * from \'./b/c\';',
+        'export * from \'./b/d\';',
+        'export * from \'./b/e\';',
+        'export * from \'./b/f\';',
+    ];
     await indexenCLI(['--input', directory, '--output', output]);
-    const index1 = await afs.readFile(output, 'utf8');
-    t.deepEqual(new Set(index1.split('\n')), expected);
+    t.deepEqual(getLines(await afs.readFile(output, 'utf8')), expected);
     await indexenCLI(['-i', directory, '-o', output]);
-    const index2 = await afs.readFile(output, 'utf8');
-    t.deepEqual(new Set(index2.split('\n')), expected);
+    t.deepEqual(getLines(await afs.readFile(output, 'utf8')), expected);
+});
+
+ava('specify ext and exclude', async (t) => {
+    const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'indexen'));
+    await afs.writeFile(path.join(directory, 'a.js'), '');
+    await afs.writeFile(path.join(directory, 'a.d.ts'), '');
+    await afs.mkdir(path.join(directory, 'b'));
+    await afs.writeFile(path.join(directory, 'b/b.js'), '');
+    await afs.writeFile(path.join(directory, 'b/c.ts'), '');
+    await afs.writeFile(path.join(directory, 'b/d.js'), '');
+    await afs.writeFile(path.join(directory, 'b/e.cjs'), '');
+    await afs.writeFile(path.join(directory, 'b/f.mjs'), '');
+    const output = path.join(directory, 'index.js');
+    const expected = [
+        '',
+        indexenHeader,
+        'export * from \'./b/b\';',
+        'export * from \'./b/d\';',
+        'export * from \'./b/e\';',
+    ];
+    await indexenCLI([
+        '--input',
+        directory,
+        '--output',
+        output,
+        '--ext',
+        '*.js',
+        '--ext',
+        '*.cjs',
+        '--exclude',
+        'a.js',
+    ]);
+    t.deepEqual(getLines(await afs.readFile(output, 'utf8')), expected);
 });
 
 ava('show help', async (t) => {
@@ -44,7 +88,7 @@ ava('show help', async (t) => {
         },
     }));
     const help2 = `${Buffer.concat(chunks2)}`;
-    for (const keyword of ['--input', '-i', '--output', '-o', '--help', '-h', '--version', '-v']) {
+    for (const keyword of ['--input', '-i', '--output', '-o', '--ext', '--help', '-h', '--version', '-v']) {
         t.true(help1.includes(keyword));
         t.true(help2.includes(keyword));
     }
