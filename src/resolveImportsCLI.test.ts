@@ -15,6 +15,7 @@ ava('resolve static imports', async (t) => {
         'import * as a from \'./a\';',
         'import * as b from \'./b\';',
         'import * as c from \'./b/c.js\';',
+        'import * as d from \'d\';',
     ].join('\n'));
     await resolveImportsCLI(['--directory', directory]);
     t.is(
@@ -23,6 +24,7 @@ ava('resolve static imports', async (t) => {
             'import * as a from \'./a.js\';',
             'import * as b from \'./b/index.js\';',
             'import * as c from \'./b/c.js\';',
+            'import * as d from \'d\';',
         ].join('\n'),
     );
 });
@@ -38,6 +40,7 @@ ava('resolve static exports', async (t) => {
         'export * from \'./a\';',
         'export * from \'./b\';',
         'export * from \'./b/c.js\';',
+        'export * from \'d\';',
     ].join('\n'));
     await resolveImportsCLI(['--directory', directory]);
     t.is(
@@ -46,6 +49,7 @@ ava('resolve static exports', async (t) => {
             'export * from \'./a.js\';',
             'export * from \'./b/index.js\';',
             'export * from \'./b/c.js\';',
+            'export * from \'d\';',
         ].join('\n'),
     );
 });
@@ -61,6 +65,7 @@ ava('resolve dynamic imports', async (t) => {
         'const a = import(\'./a\');',
         'const b = import(\'./b\');',
         'const c = import(\'./b/c.js\');',
+        'const d = import(\'d\');',
     ].join('\n'));
     await resolveImportsCLI(['--directory', directory]);
     t.is(
@@ -69,6 +74,7 @@ ava('resolve dynamic imports', async (t) => {
             'const a = import(\'./a.js\');',
             'const b = import(\'./b/index.js\');',
             'const c = import(\'./b/c.js\');',
+            'const d = import(\'d\');',
         ].join('\n'),
     );
 });

@@ -19,6 +19,9 @@ export const resolveImport = (
     importee: string,
     directory: string,
 ): string => {
+    if (!importee.startsWith('.')) {
+        return importee;
+    }
     let relative = normalizeSlash(path.relative(
         fs.realpathSync(directory),
         require.resolve(path.join(directory, importee)),
@@ -38,7 +41,7 @@ export const resolveImports = (
     const directory = path.dirname(sourceFile);
     const replaceSource = (node: acorn.Node) => {
         const {source} = node as unknown as NodeWithSource;
-        if (typeof source.value === 'string') {
+        if (typeof source.value === 'string' && source.value.startsWith('.')) {
             s.overwrite(
                 source.start + 1,
                 source.end - 1,
