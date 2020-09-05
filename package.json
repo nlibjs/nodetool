@@ -32,7 +32,9 @@
         "build": "tsc",
         "build:indexen": "ts-node src/indexen-cli.ts -d src -o src/index.ts",
         "build:tsc": "tsc",
-        "test": "ava",
+        "test": "run-s test:*",
+        "test:type": "tsc --noEmit",
+        "test:unit": "ava",
         "lint": "eslint --ext .ts src"
     },
     "dependencies": {
