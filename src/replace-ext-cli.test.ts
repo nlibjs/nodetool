@@ -4,6 +4,7 @@ import * as path from 'path';
 import ava from 'ava';
 import {replaceExtCLI} from './replace-ext-cli';
 import {getFileList} from './listFiles';
+import {normalizeSlash} from './normalizeSlash';
 
 ava('replace the extensions', async (t) => {
     const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'replaceExt'));
@@ -17,7 +18,7 @@ ava('replace the extensions', async (t) => {
     await afs.writeFile(path.join(directory, 'b/f.mjs'), '');
     await replaceExtCLI(['--directory', directory, '--entry', 'ts/txt', '-e', 'cjs/log']);
     t.deepEqual(
-        (await getFileList(directory)).map((file) => path.relative(directory, file)),
+        (await getFileList(directory)).map((file) => normalizeSlash(path.relative(directory, file))),
         [
             'a.d.txt',
             'a.js',
