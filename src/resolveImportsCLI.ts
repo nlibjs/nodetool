@@ -39,7 +39,7 @@ export const resolveImportsCLI = async (
     stdout: NodeJS.WritableStream = process.stdout,
 ): Promise<void> => {
     if (args.includes('--help') || args.includes('-h')) {
-        stdout.write('resolveImports --directory path/to/dir\n\n');
+        stdout.write('resolve-imports --directory path/to/dir\n\n');
         for (const help of serializeDefinitionMap(parse.definition)) {
             stdout.write(help);
         }

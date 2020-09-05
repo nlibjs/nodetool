@@ -35,7 +35,7 @@ export const replaceExtCLI = async (
     stdout: NodeJS.WritableStream = process.stdout,
 ): Promise<void> => {
     if (args.includes('--help') || args.includes('-h')) {
-        stdout.write('replaceExt --directory path/to/dir --entry js/cjs [--entry mjs/js]\n\n');
+        stdout.write('replace-ext --directory path/to/dir --entry js/cjs [--entry mjs/js]\n\n');
         for (const help of serializeDefinitionMap(parse.definition)) {
             stdout.write(help);
         }
