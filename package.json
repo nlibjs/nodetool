@@ -26,7 +26,8 @@
     ],
     "bin": {
         "indexen": "./lib/indexen-cli.js",
-        "resolve-imports": "./lib/resolve-imports-cli.js"
+        "resolve-imports": "./lib/resolve-imports-cli.js",
+        "replace-ext": "./lib/replace-ext-cli.js"
     },
     "scripts": {
         "build": "tsc",
