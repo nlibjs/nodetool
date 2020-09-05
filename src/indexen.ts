@@ -16,11 +16,14 @@ export const indexen = async function* (
         order?: CompareFunction<string>,
     },
 ): AsyncGenerator<string> {
+    const history: Array<string> = [];
     for (const file of await getFileList(directory, order)) {
         if (include(file)) {
-            yield `export * from ${quote}./`;
-            yield normalizeSlash(path.relative(directory, file)).slice(0, -path.extname(file).length);
-            yield `${quote};\n`;
+            const id = normalizeSlash(path.relative(directory, file)).slice(0, -path.extname(file).length);
+            if (!history.includes(id)) {
+                history.push(id);
+                yield `export * from ${quote}./${id}${quote};\n`;
+            }
         }
     }
 };
