@@ -11,10 +11,13 @@ ava('generate index', async (t) => {
     await afs.writeFile(path.join(directory, 'a.d.ts'), '');
     await afs.mkdir(path.join(directory, 'b'));
     await afs.writeFile(path.join(directory, 'b/b.js'), '');
+    await afs.writeFile(path.join(directory, 'b/b.ts'), '');
     await afs.writeFile(path.join(directory, 'b/c.ts'), '');
     await afs.writeFile(path.join(directory, 'b/d.js'), '');
     await afs.writeFile(path.join(directory, 'b/e.cjs'), '');
     await afs.writeFile(path.join(directory, 'b/f.mjs'), '');
+    await afs.writeFile(path.join(directory, 'b/testFoo.ts'), '');
+    await afs.writeFile(path.join(directory, 'b/x.test.ts'), '');
     const output = path.join(directory, 'index.js');
     const expected = [
         indexenHeader,
@@ -24,6 +27,7 @@ ava('generate index', async (t) => {
         'export * from \'./b/d\';',
         'export * from \'./b/e\';',
         'export * from \'./b/f\';',
+        'export * from \'./b/testFoo\';',
         '',
     ].join('\n');
     await indexenCLI(['--input', directory, '--output', output]);
@@ -38,10 +42,13 @@ ava('specify ext and exclude', async (t) => {
     await afs.writeFile(path.join(directory, 'a.d.ts'), '');
     await afs.mkdir(path.join(directory, 'b'));
     await afs.writeFile(path.join(directory, 'b/b.js'), '');
+    await afs.writeFile(path.join(directory, 'b/b.ts'), '');
     await afs.writeFile(path.join(directory, 'b/c.ts'), '');
     await afs.writeFile(path.join(directory, 'b/d.js'), '');
     await afs.writeFile(path.join(directory, 'b/e.cjs'), '');
     await afs.writeFile(path.join(directory, 'b/f.mjs'), '');
+    await afs.writeFile(path.join(directory, 'b/testFoo.ts'), '');
+    await afs.writeFile(path.join(directory, 'b/x.test.ts'), '');
     const output = path.join(directory, 'index.js');
     const expected = [
         indexenHeader,

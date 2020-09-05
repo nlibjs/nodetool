@@ -21,7 +21,6 @@
     },
     "files": [
         "lib",
-        "src",
         "!*.test.*"
     ],
     "bin": {
@@ -35,6 +34,12 @@
         "build:tsc": "tsc",
         "test": "ava",
         "lint": "eslint --ext .ts src"
+    },
+    "dependencies": {
+        "acorn": "^8.0.1",
+        "acorn-walk": "^8.0.0",
+        "magic-string": "^0.25.7",
+        "picomatch": "^2.2.2"
     },
     "devDependencies": {
         "@commitlint/cli": "^9.1.2",
@@ -102,20 +107,7 @@
     },
     "renovate": {
         "extends": [
-            ":ignoreModulesAndTests",
-            ":unpublishSafe",
-            ":semanticPrefixChore",
-            ":prNotPending",
-            ":prConcurrentLimit10",
-            ":prHourlyLimitNone",
-            ":label(dependencies)",
-            ":automergeMinor"
+            "github>nlibjs/renovate-config"
         ]
-    },
-    "dependencies": {
-        "acorn": "^8.0.1",
-        "acorn-walk": "^8.0.0",
-        "magic-string": "^0.25.7",
-        "picomatch": "^2.2.2"
     }
 }
