@@ -6,7 +6,9 @@ import ava from 'ava';
 import {indexenCLI, indexenHeader} from './indexen-cli';
 
 ava('generate index', async (t) => {
-    const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'indexen'));
+    const baseDirectory = await afs.mkdtemp(path.join(os.tmpdir(), 'indexen'));
+    const directory = path.join(baseDirectory, 'test');
+    await afs.mkdir(directory);
     await afs.writeFile(path.join(directory, 'a.js'), '');
     await afs.writeFile(path.join(directory, 'a.d.ts'), '');
     await afs.mkdir(path.join(directory, 'b'));
@@ -18,6 +20,8 @@ ava('generate index', async (t) => {
     await afs.writeFile(path.join(directory, 'b/f.mjs'), '');
     await afs.writeFile(path.join(directory, 'b/testFoo.ts'), '');
     await afs.writeFile(path.join(directory, 'b/x.test.ts'), '');
+    await afs.mkdir(path.join(directory, 'test'));
+    await afs.writeFile(path.join(directory, 'test/g.js'), '');
     const output = path.join(directory, 'index.js');
     const expected = [
         indexenHeader,
@@ -37,7 +41,9 @@ ava('generate index', async (t) => {
 });
 
 ava('specify ext and exclude', async (t) => {
-    const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'indexen'));
+    const baseDirectory = await afs.mkdtemp(path.join(os.tmpdir(), 'indexen'));
+    const directory = path.join(baseDirectory, 'test');
+    await afs.mkdir(directory);
     await afs.writeFile(path.join(directory, 'a.js'), '');
     await afs.writeFile(path.join(directory, 'a.d.ts'), '');
     await afs.mkdir(path.join(directory, 'b'));
@@ -49,12 +55,15 @@ ava('specify ext and exclude', async (t) => {
     await afs.writeFile(path.join(directory, 'b/f.mjs'), '');
     await afs.writeFile(path.join(directory, 'b/testFoo.ts'), '');
     await afs.writeFile(path.join(directory, 'b/x.test.ts'), '');
+    await afs.mkdir(path.join(directory, 'test'));
+    await afs.writeFile(path.join(directory, 'test/g.js'), '');
     const output = path.join(directory, 'index.js');
     const expected = [
         indexenHeader,
         'export * from \'./b/b\';',
         'export * from \'./b/d\';',
         'export * from \'./b/e\';',
+        'export * from \'./test/g\';',
         '',
     ].join('\n');
     await indexenCLI([
