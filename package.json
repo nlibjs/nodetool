@@ -24,7 +24,7 @@
         "!*.test.*"
     ],
     "bin": {
-        "indexen": "./lib/indexen-cli.js",
+        "indexen": "./lib/indexenCLI.js",
         "resolve-imports": "./lib/resolve-imports-cli.js",
         "replace-ext": "./lib/replace-ext-cli.js"
     },
