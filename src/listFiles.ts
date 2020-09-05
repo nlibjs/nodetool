@@ -1,5 +1,6 @@
 import * as path from 'path';
 import {promises as afs} from 'fs';
+import {dictionaryAsc} from './sort';
 
 export const listFiles = async function* (
     directory: string,
@@ -12,4 +13,15 @@ export const listFiles = async function* (
             yield file;
         }
     }
+};
+
+export const getFileList = async (
+    directory: string,
+    order = dictionaryAsc,
+): Promise<Array<string>> => {
+    const list: Array<string> = [];
+    for await (const file of listFiles(directory)) {
+        list.push(file);
+    }
+    return list.sort(order);
 };

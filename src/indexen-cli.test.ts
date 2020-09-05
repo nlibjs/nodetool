@@ -5,12 +5,6 @@ import * as stream from 'stream';
 import ava from 'ava';
 import {indexenCLI, indexenHeader} from './indexen-cli';
 
-const getLines = (
-    source: string,
-): Array<string> => source
-.split('\n')
-.sort((a, b) => a < b ? -1 : 1);
-
 ava('generate index', async (t) => {
     const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'indexen'));
     await afs.writeFile(path.join(directory, 'a.js'), '');
@@ -23,7 +17,6 @@ ava('generate index', async (t) => {
     await afs.writeFile(path.join(directory, 'b/f.mjs'), '');
     const output = path.join(directory, 'index.js');
     const expected = [
-        '',
         indexenHeader,
         'export * from \'./a\';',
         'export * from \'./b/b\';',
@@ -31,11 +24,12 @@ ava('generate index', async (t) => {
         'export * from \'./b/d\';',
         'export * from \'./b/e\';',
         'export * from \'./b/f\';',
-    ];
+        '',
+    ].join('\n');
     await indexenCLI(['--input', directory, '--output', output]);
-    t.deepEqual(getLines(await afs.readFile(output, 'utf8')), expected);
+    t.is(await afs.readFile(output, 'utf8'), expected);
     await indexenCLI(['-i', directory, '-o', output]);
-    t.deepEqual(getLines(await afs.readFile(output, 'utf8')), expected);
+    t.is(await afs.readFile(output, 'utf8'), expected);
 });
 
 ava('specify ext and exclude', async (t) => {
@@ -50,12 +44,12 @@ ava('specify ext and exclude', async (t) => {
     await afs.writeFile(path.join(directory, 'b/f.mjs'), '');
     const output = path.join(directory, 'index.js');
     const expected = [
-        '',
         indexenHeader,
         'export * from \'./b/b\';',
         'export * from \'./b/d\';',
         'export * from \'./b/e\';',
-    ];
+        '',
+    ].join('\n');
     await indexenCLI([
         '--input',
         directory,
@@ -68,7 +62,7 @@ ava('specify ext and exclude', async (t) => {
         '--exclude',
         'a.js',
     ]);
-    t.deepEqual(getLines(await afs.readFile(output, 'utf8')), expected);
+    t.is(await afs.readFile(output, 'utf8'), expected);
 });
 
 ava('show help', async (t) => {
