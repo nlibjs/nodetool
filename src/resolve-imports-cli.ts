@@ -50,7 +50,7 @@ export const resolveImportsCLI = async (
         await resolveImportsInDirectory(
             path.resolve(props.directory),
             createFileFilter({
-                ext: props.ext.length ? props.ext : ['.js', '.ts', '.cjs', '.mjs'],
+                ext: props.ext.length ? props.ext : ['js', 'ts', 'cjs', 'mjs'],
                 exclude: props.exclude,
             }),
         );

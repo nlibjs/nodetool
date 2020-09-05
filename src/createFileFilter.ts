@@ -20,7 +20,12 @@ export const createFileFilter = (
         exclude?: Array<string>,
     },
 ): FileFilter => {
-    const includePattern = extendPatterns(...extensions.map((ext) => `*${ext}`), ...include);
+    for (const ext of extensions) {
+        if (!(/^\w+$/).test(ext)) {
+            throw new Error(`InvalidExtension: ${ext} (valid pattern: /^\\w+$/)`);
+        }
+    }
+    const includePattern = extendPatterns(...extensions.map((ext) => `*.${ext}`), ...include);
     const excludePattern = extendPatterns(...exclude);
     return (file) => {
         const normalized = normalizeSlash(file);

@@ -63,7 +63,7 @@ export const indexenCLI = async (
             directory: path.resolve(props.input),
             output,
             include: createFileFilter({
-                ext: props.ext.length ? props.ext : ['.js', '.ts', '.cjs', '.mjs'],
+                ext: props.ext.length ? props.ext : ['js', 'ts', 'cjs', 'mjs'],
                 exclude: (props.exclude.length ? props.exclude : defaultExcludePatterns).concat(normalizeSlash(output)),
             }),
         };

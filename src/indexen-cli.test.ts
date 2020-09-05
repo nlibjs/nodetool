@@ -56,9 +56,9 @@ ava('specify ext and exclude', async (t) => {
         '--output',
         output,
         '--ext',
-        '*.js',
+        'js',
         '--ext',
-        '*.cjs',
+        'cjs',
         '--exclude',
         'a.js',
     ]);

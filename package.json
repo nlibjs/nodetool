@@ -39,7 +39,7 @@
     "devDependencies": {
         "@commitlint/cli": "^9.1.2",
         "@commitlint/config-conventional": "^9.1.2",
-        "@nlib/eslint-config": "^3.17.9",
+        "@nlib/eslint-config": "^3.17.11",
         "@types/eslint": "^7.2.2",
         "@types/picomatch": "^2.2.1",
         "@typescript-eslint/eslint-plugin": "^4.0.1",
@@ -83,7 +83,7 @@
     },
     "commitlint": {
         "extends": [
-            "@commitlint/config-conventional"
+            "@nlib/eslint-config/commitlint.config.js"
         ]
     },
     "husky": {
