@@ -24,13 +24,14 @@
         "!*.test.*"
     ],
     "bin": {
-        "indexen": "./lib/indexen-cli.js",
-        "resolve-imports": "./lib/resolve-imports-cli.js",
-        "replace-ext": "./lib/replace-ext-cli.js"
+        "indexen": "./lib/indexenCLI.js",
+        "resolve-imports": "./lib/resolveImportsCLI.js",
+        "replace-ext": "./lib/replaceExtCLI.js",
+        "cleanup-package-json": "./lib/cleanupPackageJsonCLI.js"
     },
     "scripts": {
         "build": "tsc",
-        "build:indexen": "ts-node src/indexen-cli.ts -d src -o src/index.ts",
+        "build:indexen": "ts-node src/indexenCLI.ts -d src -o src/index.ts",
         "build:tsc": "tsc",
         "test": "run-s test:*",
         "test:type": "tsc --noEmit",
@@ -80,7 +81,7 @@
         "overrides": [
             {
                 "files": [
-                    "./src/resolve-imports.ts"
+                    "./src/resolveImports.ts"
                 ],
                 "rules": {
                     "@typescript-eslint/no-base-to-string": "off"

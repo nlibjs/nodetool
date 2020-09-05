@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as stream from 'stream';
 import ava from 'ava';
-import {indexenCLI, indexenHeader} from './indexen-cli';
+import {indexenCLI, indexenHeader} from './indexenCLI';
 
 ava('generate index', async (t) => {
     const baseDirectory = await afs.mkdtemp(path.join(os.tmpdir(), 'indexen'));

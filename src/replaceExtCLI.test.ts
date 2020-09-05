@@ -2,7 +2,7 @@ import {promises as afs} from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import ava from 'ava';
-import {replaceExtCLI} from './replace-ext-cli';
+import {replaceExtCLI} from './replaceExtCLI';
 import {getFileList} from './listFiles';
 import {normalizeSlash} from './normalizeSlash';
 
