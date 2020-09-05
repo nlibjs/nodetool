@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as path from 'path';
 import * as console from 'console';
-import {resolveImportsInDirectory} from './resolve-imports';
+import {resolveImportsInDirectory} from './resolveImports';
 import {createCLIArgumentsParser} from './createCLIArgumentsParser';
 import {serializeDefinitionMap} from './serializeDefinitionMap';
 import {getVersion} from './getVersion';

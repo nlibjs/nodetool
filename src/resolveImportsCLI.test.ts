@@ -2,7 +2,7 @@ import {promises as afs} from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import ava from 'ava';
-import {resolveImportsCLI} from './resolve-imports-cli';
+import {resolveImportsCLI} from './resolveImportsCLI';
 
 ava('resolve static imports', async (t) => {
     const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'resolve-imports'));
