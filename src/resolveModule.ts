@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import {isErrorLike} from './is';
 
 export const RequireCJSFirst = ['cjs', 'js', 'mjs'];
@@ -28,7 +29,7 @@ export const resolveModule = async (
         if (stats.isFile()) {
             return id;
         } else if (resolveDirectory && stats.isDirectory()) {
-            return await resolveModule(`${id}/index`, extensions, false);
+            return await resolveModule(`${id}${path.sep}index`, extensions, false);
         }
     }
     for (const extension of extensions) {
