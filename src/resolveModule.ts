@@ -20,7 +20,7 @@ export const statOrNull = async (
 
 export const resolveModule = async (
     id: string,
-    extensions: Array<string>,
+    extensions: Array<string> = RequireJSFirst,
     resolveDirectory = true,
 ): Promise<string> => {
     const stats = await statOrNull(id);
