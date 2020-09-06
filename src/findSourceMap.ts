@@ -45,6 +45,18 @@ export const loadSourceMapFromUrl = async (
     return null;
 };
 
+export const findSourceMapFileFromUrl = (
+    {url, file}: {
+        url: string,
+        file: string,
+    },
+): string | null => {
+    if (!url.startsWith('data:') || !url.includes('://')) {
+        return path.resolve(path.dirname(file), url);
+    }
+    return null;
+};
+
 const LeftPartRegExp = /^\s*\/[/*]\s*[#@]\s*$/;
 
 export interface FoundSourceMap {

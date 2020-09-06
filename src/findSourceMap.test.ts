@@ -2,7 +2,7 @@ import {promises as afs} from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import ava from 'ava';
-import {findSourceMap} from './findSourceMap';
+import {findSourceMap, findSourceMapFileFromUrl} from './findSourceMap';
 
 const sampleSourceMapData = {
     version: 3,
@@ -49,6 +49,10 @@ ava('find sourcemap (url)', async (t) => {
         url: {start: 21, end: 31},
         data: sampleSourceMapData,
     });
+    t.is(
+        findSourceMapFileFromUrl({url: 'foo.js.map', file: sourceFile}),
+        path.join(directory, 'foo.js.map'),
+    );
 });
 
 ava('find sourcemap (base64 data url)', async (t) => {
