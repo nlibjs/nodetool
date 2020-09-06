@@ -83,6 +83,9 @@ export const findSourceMap = async (
     let offset = 0;
     while (offset < length) {
         const keywordStart = code.indexOf(SourceMapKeyword, offset);
+        if (keywordStart < 0) {
+            break;
+        }
         const line = getLineRange(code, keywordStart);
         if (SourceMapLeftPartRegExp.test(code.slice(line.start, keywordStart))) {
             const keywordEnd = keywordStart + 16;
