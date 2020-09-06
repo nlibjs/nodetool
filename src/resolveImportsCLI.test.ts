@@ -78,3 +78,28 @@ ava('resolve dynamic imports', async (t) => {
         ].join('\n'),
     );
 });
+
+ava('resolve require', async (t) => {
+    const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'resolve-imports'));
+    await afs.writeFile(path.join(directory, 'a.js'), '1');
+    await afs.mkdir(path.join(directory, 'b'));
+    await afs.writeFile(path.join(directory, 'b/index.js'), '1');
+    await afs.writeFile(path.join(directory, 'b/c.js'), '1');
+    const sourceFile = path.join(directory, 'input.js');
+    await afs.writeFile(sourceFile, [
+        'const a = require(\'./a\');',
+        'const b = require(\'./b\');',
+        'const c = require(\'./b/c.js\');',
+        'const d = require(\'d\');',
+    ].join('\n'));
+    await resolveImportsCLI(['--directory', directory, '--cjs']);
+    t.is(
+        await afs.readFile(sourceFile, 'utf8'),
+        [
+            'const a = require(\'./a.js\');',
+            'const b = require(\'./b/index.js\');',
+            'const c = require(\'./b/c.js\');',
+            'const d = require(\'d\');',
+        ].join('\n'),
+    );
+});

@@ -21,6 +21,10 @@ const parse = createCLIArgumentsParser({
         type: 'string[]?',
         description: 'Specify patterns to exclude',
     },
+    cjs: {
+        type: 'boolean',
+        description: 'Resolve the commonjs require() statements',
+    },
     help: {
         type: 'boolean',
         alias: 'h',
@@ -53,6 +57,9 @@ export const resolveImportsCLI = async (
                 ext: props.ext.length ? props.ext : ['js', 'ts', 'cjs', 'mjs'],
                 exclude: props.exclude,
             }),
+            {
+                type: props.cjs ? 'cjs' : 'esm',
+            },
         );
     }
 };
