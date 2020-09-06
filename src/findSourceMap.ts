@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import {RawSourceMap} from 'source-map';
+import {getLineRange} from './getLineRange';
 import {isRecord} from './is';
 
 export const loadSourceMapFromJSONString = (
@@ -57,7 +58,7 @@ export const findSourceMapFileFromUrl = (
     return null;
 };
 
-const LeftPartRegExp = /^\s*\/[/*]\s*[#@]\s*$/;
+export const SourceMapLeftPartRegExp = /^\s*\/[/*]\s*[#@]\s*$/;
 
 export interface FoundSourceMap {
     line: {
@@ -71,35 +72,29 @@ export interface FoundSourceMap {
     data: RawSourceMap,
 }
 
+export const SourceMapKeyword = 'sourceMappingURL';
+
 export const findSourceMap = async (
     file: string,
     codeString?: string,
 ): Promise<FoundSourceMap | null> => {
-    const KeyWord = 'sourceMappingURL';
     const code = codeString || await fs.promises.readFile(file, 'utf8');
     const {length} = code;
     let offset = 0;
     while (offset < length) {
-        const keywordStart = code.indexOf(KeyWord, offset);
-        const lineStart = code.lastIndexOf('\n', keywordStart) + 1;
-        let lineEnd = code.indexOf('\n', keywordStart + 16);
-        if (lineEnd < 0) {
-            lineEnd = length;
-        }
-        if (LeftPartRegExp.test(code.slice(lineStart, keywordStart))) {
+        const keywordStart = code.indexOf(SourceMapKeyword, offset);
+        const line = getLineRange(code, keywordStart);
+        if (SourceMapLeftPartRegExp.test(code.slice(line.start, keywordStart))) {
             const keywordEnd = keywordStart + 16;
             if (code[keywordEnd] === '=') {
                 const urlStart = keywordEnd + 1;
-                const match = (/^\S+/).exec(code.slice(urlStart, lineEnd));
+                const match = (/^\S+/).exec(code.slice(urlStart, line.end));
                 if (match) {
                     const url = match[0];
                     const data = await loadSourceMapFromUrl({url, file});
                     if (data) {
                         return {
-                            line: {
-                                start: lineStart,
-                                end: lineEnd,
-                            },
+                            line,
                             url: {
                                 start: urlStart,
                                 end: urlStart + url.length,
@@ -110,7 +105,7 @@ export const findSourceMap = async (
                 }
             }
         }
-        offset = lineEnd;
+        offset = line.end;
     }
     return null;
 };
