@@ -42,7 +42,8 @@
         "acorn": "^8.0.1",
         "acorn-walk": "^8.0.0",
         "magic-string": "^0.25.7",
-        "picomatch": "^2.2.2"
+        "picomatch": "^2.2.2",
+        "source-map": "^0.7.3"
     },
     "devDependencies": {
         "@commitlint/cli": "^9.1.2",
