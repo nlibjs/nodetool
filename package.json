@@ -30,8 +30,8 @@
         "cleanup-package-json": "./lib/cleanupPackageJsonCLI.js"
     },
     "scripts": {
-        "build": "tsc",
-        "build:indexen": "ts-node src/indexenCLI.ts -d src -o src/index.ts",
+        "build": "run-s build:*",
+        "build:indexen": "ts-node src/indexenCLI.ts --input src --output src/index.ts",
         "build:tsc": "tsc",
         "test": "run-s test:*",
         "test:type": "tsc --noEmit",

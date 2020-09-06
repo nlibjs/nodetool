@@ -5,6 +5,7 @@ import * as walk from 'acorn-walk';
 import MagicString from 'magic-string';
 import {listFiles} from './listFiles';
 import {normalizeSlash} from './normalizeSlash';
+import {resolveModule} from './resolveModule';
 
 interface Literal extends acorn.Node {
     raw: string,
@@ -15,16 +16,21 @@ interface NodeWithSource extends acorn.Node {
     source: Literal,
 }
 
-export const resolveImport = (
+export const resolveImport = async (
     importee: string,
     directory: string,
-): string => {
+    extensions?: Array<string>,
+): Promise<string> => {
     if (!importee.startsWith('.')) {
         return importee;
     }
+    const realPathDirectory = await fs.promises.realpath(directory);
     let relative = normalizeSlash(path.relative(
-        fs.realpathSync(directory),
-        require.resolve(path.join(directory, importee)),
+        realPathDirectory,
+        await resolveModule(
+            path.join(realPathDirectory, importee),
+            extensions,
+        ),
     ));
     if (!relative.startsWith('.')) {
         relative = `./${relative}`;
@@ -32,20 +38,25 @@ export const resolveImport = (
     return relative;
 };
 
-export const resolveImports = (
+export const resolveImports = async (
     sourceFile: string,
     code: string,
-    acornOptions?: acorn.Options,
-): string => {
+    {extensions, acorn: acornOptions}: {
+        extensions?: Array<string>,
+        acorn?: acorn.Options,
+    } = {},
+): Promise<string> => {
+    const replacementTasks: Array<Promise<void>> = [];
     const s = new MagicString(code);
     const directory = path.dirname(sourceFile);
     const replaceSource = (node: acorn.Node) => {
         const {source} = node as unknown as NodeWithSource;
         if (typeof source.value === 'string' && source.value.startsWith('.')) {
-            s.overwrite(
-                source.start + 1,
-                source.end - 1,
-                resolveImport(source.value, directory),
+            replacementTasks.push(
+                resolveImport(source.value, directory, extensions)
+                .then((resolved) => {
+                    s.overwrite(source.start + 1, source.end - 1, resolved);
+                }),
             );
         }
     };
@@ -62,31 +73,37 @@ export const resolveImports = (
             ImportExpression: replaceSource,
         },
     );
+    await Promise.all(replacementTasks);
     return s.toString();
 };
 
 export const resolveImportsInFile = async (
     sourceFile: string,
-    acornOptions?: acorn.Options,
+    options: {
+        extensions?: Array<string>,
+        acorn?: acorn.Options,
+    } = {},
 ): Promise<void> => await fs.promises.writeFile(
     sourceFile,
-    resolveImports(
+    await resolveImports(
         sourceFile,
         await fs.promises.readFile(sourceFile, 'utf8'),
-        acornOptions,
+        options,
     ),
 );
-
 
 export const resolveImportsInDirectory = async (
     directory: string,
     include: (file: string) => boolean,
-    acornOptions?: acorn.Options,
+    options: {
+        extensions?: Array<string>,
+        acorn?: acorn.Options,
+    } = {},
 ): Promise<void> => {
     const promises: Array<ReturnType<typeof resolveImportsInFile>> = [];
     for await (const file of listFiles(directory)) {
         if (include(file)) {
-            promises.push(resolveImportsInFile(file, acornOptions));
+            promises.push(resolveImportsInFile(file, options));
         }
     }
     await Promise.all(promises);
