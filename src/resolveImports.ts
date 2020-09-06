@@ -6,8 +6,9 @@ import MagicString, {SourceMap} from 'magic-string';
 import {listFiles} from './listFiles';
 import {normalizeSlash} from './normalizeSlash';
 import {resolveModule} from './resolveModule';
-import {findSourceMap, findSourceMapFileFromUrl} from './findSourceMap';
+import {findSourceMap} from './findSourceMap';
 import {mergeSourceMaps} from './mergeSourceMap';
+import {updateSourceMap} from './updateSourceMap';
 
 interface Identifier extends acorn.Node {
     type: 'Identifier',
@@ -73,13 +74,15 @@ export const resolveImports = async (
     const replacementTasks: Array<Promise<void>> = [];
     const s = new MagicString(code);
     const directory = path.dirname(sourceFile);
-    const replaceSourceLiteral = (node: StringLiteral) => {
-        replacementTasks.push(
-            resolveImport(node.value, directory, extensions)
-            .then((resolved) => {
-                s.overwrite(node.start + 1, node.end - 1, resolved);
-            }),
-        );
+    const replaceSourceLiteral = (node: acorn.Node) => {
+        if (isStringLiteral(node) && node.value.startsWith('.')) {
+            replacementTasks.push(
+                resolveImport(node.value, directory, extensions)
+                .then((resolved) => {
+                    s.overwrite(node.start + 1, node.end - 1, resolved);
+                }),
+            );
+        }
     };
     const ast = acorn.parse(code, {ecmaVersion: 2020, ...acornOptions, sourceType: 'module', sourceFile});
     if (type === 'cjs') {
@@ -87,19 +90,13 @@ export const resolveImports = async (
             CallExpression: (node: acorn.Node) => {
                 const {callee, arguments: args} = node as unknown as CallExpression;
                 if (callee.name === 'require' && args.length === 1) {
-                    const firstArgument = args[0];
-                    if (isStringLiteral(firstArgument)) {
-                        replaceSourceLiteral(firstArgument);
-                    }
+                    replaceSourceLiteral(args[0]);
                 }
             },
         });
     } else {
         const replaceSource = (node: acorn.Node) => {
-            const {source} = node as unknown as NodeWithSource;
-            if (isStringLiteral(source) && source.value.startsWith('.')) {
-                replaceSourceLiteral(source);
-            }
+            replaceSourceLiteral((node as unknown as NodeWithSource).source);
         };
         walk.simple(ast, {
             ImportDeclaration: replaceSource,
@@ -108,34 +105,31 @@ export const resolveImports = async (
         });
     }
     await Promise.all(replacementTasks);
-    return {code: s.toString(), mapping: s.generateMap()};
+    const source = path.basename(sourceFile);
+    return {
+        code: s.toString(),
+        mapping: s.generateMap({source, file: source}),
+    };
 };
 
 export const resolveImportsInFile = async (
     file: string,
     options?: ResolveImportOptions,
 ): Promise<void> => {
-    let code = await fs.promises.readFile(file, 'utf8');
-    const result = await resolveImports(file, code, options);
-    code = result.code;
-    const sourceMap = await findSourceMap(file, code);
-    const output = file;
+    const originalCode = await fs.promises.readFile(file, 'utf8');
+    const result = await resolveImports(file, originalCode, options);
+    const sourceMap = await findSourceMap(file, result.code);
     if (sourceMap) {
-        const sourceMapFile = findSourceMapFileFromUrl({
-            file,
-            url: code.slice(sourceMap.url.start, sourceMap.url.end),
-        }) || `${file}.map`;
-        const s = new MagicString(code);
-        s.remove(sourceMap.line.start, sourceMap.line.end);
-        s.append(`//# sourceMappingURL=${normalizeSlash(path.relative(path.dirname(file), sourceMapFile))}\n`);
-        await fs.promises.writeFile(sourceMapFile, JSON.stringify(
-            await mergeSourceMaps(sourceMap.data, result.mapping, s.generateMap()),
-            null,
-            4,
-        ));
-        code = s.toString();
+        await updateSourceMap({
+            sourceMap,
+            newData: await mergeSourceMaps(
+                sourceMap.data,
+                result.mapping,
+            ),
+        });
+    } else {
+        await fs.promises.writeFile(file, result.code);
     }
-    await fs.promises.writeFile(output, result.code);
 };
 
 export const resolveImportsInDirectory = async (

@@ -5,6 +5,7 @@ import ava from 'ava';
 import {replaceExtCLI} from './replaceExtCLI';
 import {getFileList} from './listFiles';
 import {normalizeSlash} from './normalizeSlash';
+import {RawSourceMap} from 'source-map';
 
 ava('replace the extensions', async (t) => {
     const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'replaceExt'));
@@ -28,5 +29,52 @@ ava('replace the extensions', async (t) => {
             'b/e.log',
             'b/f.mjs',
         ],
+    );
+});
+
+ava('update sourcemap', async (t) => {
+    const sourceMapData = {
+        version: 3,
+        file: 'a.js',
+        sources: [
+            '../src/a.js',
+        ],
+        names: [],
+        mappings: 'AAAA,OAAO,EAAC',
+    };
+    const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'replaceExt'));
+    await afs.writeFile(
+        path.join(directory, 'a.js'),
+        [
+            '',
+            '//# sourceMappingURL=a.js.map',
+        ].join('\n'),
+    );
+    await afs.writeFile(
+        path.join(directory, 'a.js.map'),
+        JSON.stringify(sourceMapData, null, 4),
+    );
+    await replaceExtCLI(['--directory', directory, '--entry', 'js/cjs']);
+    t.deepEqual(
+        (await getFileList(directory)).map((file) => normalizeSlash(path.relative(directory, file))),
+        [
+            'a.cjs',
+            'a.js.map',
+        ],
+    );
+    const updated = JSON.parse(
+        await afs.readFile(path.join(directory, 'a.js.map'), 'utf8'),
+    ) as unknown as RawSourceMap;
+    t.deepEqual(
+        updated,
+        {
+            version: 3,
+            file: 'a.cjs',
+            sources: [
+                '../src/a.js',
+            ],
+            names: [],
+            mappings: 'AAAA,OAAO,EAAC',
+        },
     );
 });

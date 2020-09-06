@@ -61,6 +61,8 @@ export const findSourceMapFileFromUrl = (
 export const SourceMapLeftPartRegExp = /^\s*\/[/*]\s*[#@]\s*$/;
 
 export interface FoundSourceMap {
+    file: string,
+    code: string,
     line: {
         start: number,
         end: number,
@@ -97,6 +99,8 @@ export const findSourceMap = async (
                     const data = await loadSourceMapFromUrl({url, file});
                     if (data) {
                         return {
+                            file,
+                            code,
                             line,
                             url: {
                                 start: urlStart,
