@@ -4,7 +4,7 @@ import * as path from 'path';
 import ava from 'ava';
 import {findSourceMap} from './findSourceMap';
 
-const sampleSourceMap = {
+const sampleSourceMapData = {
     version: 3,
     file: 'input.js',
     sourceRoot: '',
@@ -42,29 +42,41 @@ ava('find sourcemap (url)', async (t) => {
     const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'findSourceMap'));
     const sourceFile = path.join(directory, 'input.js');
     await afs.writeFile(sourceFile, '//# sourceMappingURL=foo.js.map');
-    await afs.writeFile(path.join(directory, 'foo.js.map'), JSON.stringify(sampleSourceMap, null, 4));
+    await afs.writeFile(path.join(directory, 'foo.js.map'), JSON.stringify(sampleSourceMapData, null, 4));
     const actual = await findSourceMap(sourceFile);
-    t.deepEqual(actual, sampleSourceMap);
+    t.deepEqual(actual, {
+        line: {start: 0, end: 31},
+        url: {start: 21, end: 31},
+        data: sampleSourceMapData,
+    });
 });
 
 ava('find sourcemap (base64 data url)', async (t) => {
     const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'findSourceMap'));
     const sourceFile = path.join(directory, 'input.js');
     await afs.writeFile(sourceFile, `//# sourceMappingURL=${generateDataURL({
-        data: Buffer.from(JSON.stringify(sampleSourceMap, null, 4)),
+        data: Buffer.from(JSON.stringify(sampleSourceMapData, null, 4)),
         base64: true,
     })}`);
     const actual = await findSourceMap(sourceFile);
-    t.deepEqual(actual, sampleSourceMap);
+    t.deepEqual(actual, {
+        line: {start: 0, end: 274},
+        url: {start: 21, end: 274},
+        data: sampleSourceMapData,
+    });
 });
 
 ava('find sourcemap (encoded data url)', async (t) => {
     const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'findSourceMap'));
     const sourceFile = path.join(directory, 'input.js');
     await afs.writeFile(sourceFile, `//# sourceMappingURL=${generateDataURL({
-        data: Buffer.from(JSON.stringify(sampleSourceMap, null, 4)),
+        data: Buffer.from(JSON.stringify(sampleSourceMapData, null, 4)),
         base64: false,
     })}`);
     const actual = await findSourceMap(sourceFile);
-    t.deepEqual(actual, sampleSourceMap);
+    t.deepEqual(actual, {
+        line: {start: 0, end: 394},
+        url: {start: 21, end: 394},
+        data: sampleSourceMapData,
+    });
 });

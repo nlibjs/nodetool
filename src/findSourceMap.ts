@@ -47,13 +47,24 @@ export const loadSourceMapFromUrl = async (
 
 const LeftPartRegExp = /^\s*\/[/*]\s*[#@]\s*$/;
 
-export const findSourceMapInCode = async (
-    {code, file}: {
-        code: string,
-        file: string,
+export interface FoundSourceMap {
+    line: {
+        start: number,
+        end: number,
     },
-): Promise<RawSourceMap | null> => {
+    url: {
+        start: number,
+        end: number,
+    },
+    data: RawSourceMap,
+}
+
+export const findSourceMap = async (
+    file: string,
+    codeString?: string,
+): Promise<FoundSourceMap | null> => {
     const KeyWord = 'sourceMappingURL';
+    const code = codeString || await fs.promises.readFile(file, 'utf8');
     const {length} = code;
     let offset = 0;
     while (offset < length) {
@@ -66,12 +77,24 @@ export const findSourceMapInCode = async (
         if (LeftPartRegExp.test(code.slice(lineStart, keywordStart))) {
             const keywordEnd = keywordStart + 16;
             if (code[keywordEnd] === '=') {
-                const match = (/^\S+/).exec(code.slice(keywordEnd + 1, lineEnd));
+                const urlStart = keywordEnd + 1;
+                const match = (/^\S+/).exec(code.slice(urlStart, lineEnd));
                 if (match) {
-                    return await loadSourceMapFromUrl({
-                        url: match[0],
-                        file,
-                    });
+                    const url = match[0];
+                    const data = await loadSourceMapFromUrl({url, file});
+                    if (data) {
+                        return {
+                            line: {
+                                start: lineStart,
+                                end: lineEnd,
+                            },
+                            url: {
+                                start: urlStart,
+                                end: urlStart + url.length,
+                            },
+                            data,
+                        };
+                    }
                 }
             }
         }
@@ -79,10 +102,3 @@ export const findSourceMapInCode = async (
     }
     return null;
 };
-
-export const findSourceMap = async (
-    file: string,
-): Promise<RawSourceMap | null> => await findSourceMapInCode({
-    code: await fs.promises.readFile(file, 'utf8'),
-    file,
-});
