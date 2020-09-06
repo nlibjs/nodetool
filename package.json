@@ -27,7 +27,8 @@
         "indexen": "./lib/indexenCLI.js",
         "resolve-imports": "./lib/resolveImportsCLI.js",
         "replace-ext": "./lib/replaceExtCLI.js",
-        "cleanup-package-json": "./lib/cleanupPackageJsonCLI.js"
+        "cleanup-package-json": "./lib/cleanupPackageJsonCLI.js",
+        "remove-sourcemap": "./lib/removeSourceMapCLI.js"
     },
     "scripts": {
         "build": "run-s build:*",
@@ -42,7 +43,8 @@
         "acorn": "^8.0.1",
         "acorn-walk": "^8.0.0",
         "magic-string": "^0.25.7",
-        "picomatch": "^2.2.2"
+        "picomatch": "^2.2.2",
+        "source-map": "^0.7.3"
     },
     "devDependencies": {
         "@commitlint/cli": "^9.1.2",
