@@ -83,7 +83,8 @@
         "overrides": [
             {
                 "files": [
-                    "./src/resolveImports.ts"
+                    "./src/resolveImports.ts",
+                    "./src/updateSourceMap.ts"
                 ],
                 "rules": {
                     "@typescript-eslint/no-base-to-string": "off"

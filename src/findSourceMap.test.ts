@@ -44,7 +44,7 @@ ava('find sourcemap (url)', async (t) => {
     await afs.writeFile(sourceFile, '//# sourceMappingURL=foo.js.map');
     await afs.writeFile(path.join(directory, 'foo.js.map'), JSON.stringify(sampleSourceMapData, null, 4));
     const actual = await findSourceMap(sourceFile);
-    t.deepEqual(actual, {
+    t.like(actual, {
         line: {start: 0, end: 31},
         url: {start: 21, end: 31},
         data: sampleSourceMapData,
@@ -63,7 +63,7 @@ ava('find sourcemap (base64 data url)', async (t) => {
         base64: true,
     })}`);
     const actual = await findSourceMap(sourceFile);
-    t.deepEqual(actual, {
+    t.like(actual, {
         line: {start: 0, end: 274},
         url: {start: 21, end: 274},
         data: sampleSourceMapData,
@@ -78,7 +78,7 @@ ava('find sourcemap (encoded data url)', async (t) => {
         base64: false,
     })}`);
     const actual = await findSourceMap(sourceFile);
-    t.deepEqual(actual, {
+    t.like(actual, {
         line: {start: 0, end: 394},
         url: {start: 21, end: 394},
         data: sampleSourceMapData,

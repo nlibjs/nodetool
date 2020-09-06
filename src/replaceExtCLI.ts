@@ -6,6 +6,8 @@ import {createCLIArgumentsParser} from './createCLIArgumentsParser';
 import {serializeDefinitionMap} from './serializeDefinitionMap';
 import {getVersion} from './getVersion';
 import {listFiles} from './listFiles';
+import {findSourceMap} from './findSourceMap';
+import {updateSourceMap} from './updateSourceMap';
 
 const parse = createCLIArgumentsParser({
     directory: {
@@ -30,6 +32,30 @@ const parse = createCLIArgumentsParser({
     },
 });
 
+export const replaceExt = async (
+    {file, from, to}: {
+        file: string,
+        from: string,
+        to: string,
+    },
+) => {
+    const sourceMap = await findSourceMap(file);
+    if (sourceMap) {
+        const {data} = sourceMap;
+        await updateSourceMap({
+            sourceMap,
+            newData: {
+                ...data,
+                file: `${data.file.slice(0, -from.length)}${to}`,
+            },
+        });
+    }
+    await fs.promises.rename(
+        file,
+        `${file.slice(0, -from.length)}${to}`,
+    );
+};
+
 export const replaceExtCLI = async (
     args: Array<string>,
     stdout: NodeJS.WritableStream = process.stdout,
@@ -50,10 +76,11 @@ export const replaceExtCLI = async (
             const ext = path.extname(file);
             const replacement = mapping.get(ext);
             if (replacement) {
-                await fs.promises.rename(
+                await replaceExt({
                     file,
-                    `${file.slice(0, -ext.length)}${replacement}`,
-                );
+                    from: ext,
+                    to: replacement,
+                });
             }
         }
     }
