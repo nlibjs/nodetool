@@ -63,7 +63,7 @@ export const resolveImportsCLI = async (
     }
 };
 
-if (!module.parent) {
+if (!require.main) {
     resolveImportsCLI(process.argv.slice(2))
     .catch((error) => {
         console.error(error);
