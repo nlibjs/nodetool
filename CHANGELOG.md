@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.1.5 (2020-09-15)
+
+### Code Refactoring
+
+- replace module.parent to require.main (874c815)
+
+### Dependency Upgrades
+
+- upgrade dependencies (09f522f)
+
+
 ## v0.1.8 (2020-09-06)
 
 ### Features
