@@ -2,10 +2,11 @@ import {promises as afs} from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import ava from 'ava';
-import {replaceExtCLI} from './replaceExtCLI';
 import {getFileList} from './listFiles';
 import {normalizeSlash} from './normalizeSlash';
 import {RawSourceMap} from 'source-map';
+import {exec} from './exec';
+const scriptPath = path.join(__dirname, 'replaceExtCLI.ts');
 
 ava('replace the extensions', async (t) => {
     const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'replaceExt'));
@@ -17,7 +18,7 @@ ava('replace the extensions', async (t) => {
     await afs.writeFile(path.join(directory, 'b/d.js'), '');
     await afs.writeFile(path.join(directory, 'b/e.cjs'), '');
     await afs.writeFile(path.join(directory, 'b/f.mjs'), '');
-    await replaceExtCLI(['--directory', directory, '--entry', 'ts/txt', '-e', 'cjs/log']);
+    await exec(`npx ts-node ${scriptPath} --directory ${directory} --entry ts/txt -e cjs/log`);
     t.deepEqual(
         (await getFileList(directory)).map((file) => normalizeSlash(path.relative(directory, file))),
         [
@@ -54,7 +55,7 @@ ava('update sourcemap', async (t) => {
         path.join(directory, 'a.js.map'),
         JSON.stringify(sourceMapData, null, 4),
     );
-    await replaceExtCLI(['--directory', directory, '--entry', 'js/cjs']);
+    await exec(`npx ts-node ${scriptPath} --directory ${directory} --entry js/cjs`);
     t.deepEqual(
         (await getFileList(directory)).map((file) => normalizeSlash(path.relative(directory, file))),
         [

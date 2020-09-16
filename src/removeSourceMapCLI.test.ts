@@ -2,7 +2,8 @@ import {promises as afs} from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import ava from 'ava';
-import {removeSourceMapCLI} from './removeSourceMapCLI';
+import {exec} from './exec';
+const scriptPath = path.join(__dirname, 'removeSourceMapCLI.ts');
 
 ava('remove sourcemap lines', async (t) => {
     const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'findSourceMap'));
@@ -12,7 +13,7 @@ ava('remove sourcemap lines', async (t) => {
         '//# sourceMappingURL=foo.js.map',
         'bar',
     ].join('\n'));
-    await removeSourceMapCLI(['--directory', directory]);
+    await exec(`npx ts-node ${scriptPath} --directory ${directory}`);
     t.is(
         await afs.readFile(sourceFile, 'utf8'),
         [
