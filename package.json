@@ -75,7 +75,8 @@
         ],
         "files": [
             "!**/*.module.ts"
-        ]
+        ],
+        "timeout": "1m"
     },
     "eslintConfig": {
         "extends": [
