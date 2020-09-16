@@ -2,7 +2,8 @@ import {promises as afs} from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import ava from 'ava';
-import {cleanupPackageJsonCLI} from './cleanupPackageJsonCLI';
+import {exec} from './exec';
+const scriptPath = path.join(__dirname, 'cleanupPackageJsonCLI.ts');
 
 ava('cleanup package.json', async (t) => {
     const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'cleanup-package-json'));
@@ -15,7 +16,7 @@ ava('cleanup package.json', async (t) => {
         commitlint: '',
         husky: '',
     }, null, 4));
-    await cleanupPackageJsonCLI(['--file', packageJsonPath]);
+    await exec(`npx ts-node ${scriptPath} --file ${packageJsonPath}`);
     t.is(
         await afs.readFile(packageJsonPath, 'utf8'),
         JSON.stringify({

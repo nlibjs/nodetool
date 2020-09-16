@@ -86,7 +86,7 @@ export const replaceExtCLI = async (
     }
 };
 
-if (!require.main) {
+if (require.main === module) {
     replaceExtCLI(process.argv.slice(2))
     .catch((error) => {
         console.error(error);

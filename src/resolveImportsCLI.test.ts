@@ -2,7 +2,8 @@ import {promises as afs} from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import ava from 'ava';
-import {resolveImportsCLI} from './resolveImportsCLI';
+import {exec} from './exec';
+const scriptPath = path.join(__dirname, 'resolveImportsCLI.ts');
 
 ava('resolve static imports', async (t) => {
     const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'resolve-imports'));
@@ -17,7 +18,7 @@ ava('resolve static imports', async (t) => {
         'import * as c from \'./b/c.js\';',
         'import * as d from \'d\';',
     ].join('\n'));
-    await resolveImportsCLI(['--directory', directory]);
+    await exec(`npx ts-node ${scriptPath} --directory ${directory}`);
     t.is(
         await afs.readFile(sourceFile, 'utf8'),
         [
@@ -42,7 +43,7 @@ ava('resolve static exports', async (t) => {
         'export * from \'./b/c.js\';',
         'export * from \'d\';',
     ].join('\n'));
-    await resolveImportsCLI(['--directory', directory]);
+    await exec(`npx ts-node ${scriptPath} --directory ${directory}`);
     t.is(
         await afs.readFile(sourceFile, 'utf8'),
         [
@@ -67,7 +68,7 @@ ava('resolve dynamic imports', async (t) => {
         'const c = import(\'./b/c.js\');',
         'const d = import(\'d\');',
     ].join('\n'));
-    await resolveImportsCLI(['--directory', directory]);
+    await exec(`npx ts-node ${scriptPath} --directory ${directory}`);
     t.is(
         await afs.readFile(sourceFile, 'utf8'),
         [
@@ -92,7 +93,7 @@ ava('resolve require', async (t) => {
         'const c = require(\'./b/c.js\');',
         'const d = require(\'d\');',
     ].join('\n'));
-    await resolveImportsCLI(['--directory', directory, '--cjs']);
+    await exec(`npx ts-node ${scriptPath} --directory ${directory} --cjs`);
     t.is(
         await afs.readFile(sourceFile, 'utf8'),
         [

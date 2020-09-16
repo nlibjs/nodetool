@@ -41,7 +41,7 @@ export const cleanupPackageJsonCLI = async (
     }
 };
 
-if (!require.main) {
+if (require.main === module) {
     cleanupPackageJsonCLI(process.argv.slice(2))
     .catch((error) => {
         console.error(error);
