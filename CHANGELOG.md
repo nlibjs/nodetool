@@ -1,6 +1,18 @@
 # Changelog
 
-## v0.1.5 (2020-09-15)
+## v0.1.5 (2020-09-16)
+
+### Bug Fixes
+
+- use require.main === module (de6df57)
+
+### Tests
+
+- set timeout (0594f1c)
+- execute command directly (c939824)
+
+
+## v0.1.9 (2020-09-15)
 
 ### Code Refactoring
 
