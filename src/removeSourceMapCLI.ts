@@ -91,7 +91,7 @@ export const removeSourceMapCLI = async (
     }
 };
 
-if (!require.main) {
+if (require.main === module) {
     removeSourceMapCLI(process.argv.slice(2))
     .catch((error) => {
         console.error(error);

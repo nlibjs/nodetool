@@ -77,7 +77,7 @@ export const indexenCLI = async (
     }
 };
 
-if (!require.main) {
+if (require.main === module) {
     indexenCLI(process.argv.slice(2))
     .catch((error) => {
         console.error(error);
