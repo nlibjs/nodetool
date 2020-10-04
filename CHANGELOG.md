@@ -1,6 +1,14 @@
 # Changelog
 
-## v0.1.5 (2020-09-16)
+## v0.1.11 (2020-10-04)
+
+### Dependency Upgrades
+
+- add @types/node (a89efaf)
+- setup @nlib/lint-commit (0878c20)
+
+
+## v0.1.10 (2020-09-16)
 
 ### Bug Fixes
 
