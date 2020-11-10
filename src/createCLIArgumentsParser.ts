@@ -138,9 +138,7 @@ export interface CLIArgumentDefinition {
     readonly alias?: string,
 }
 
-export interface CLIArgumentDefinitionMap {
-    readonly [key: string]: CLIArgumentDefinition,
-}
+export interface CLIArgumentDefinitionMap extends Readonly<Record<string, CLIArgumentDefinition>> {}
 
 export type CLIArgumentValue<T extends CLIArgumentDefinition> =
 T['type'] extends 'boolean' ? boolean
