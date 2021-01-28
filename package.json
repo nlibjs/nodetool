@@ -44,7 +44,7 @@
     },
     "dependencies": {
         "acorn": "8.0.5",
-        "acorn-walk": "8.0.1",
+        "acorn-walk": "8.0.2",
         "magic-string": "0.25.7",
         "picomatch": "2.2.2",
         "source-map": "0.7.3"
