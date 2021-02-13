@@ -18,7 +18,7 @@ interface Identifier extends acorn.Node {
 interface Literal extends acorn.Node {
     type: 'Literal',
     raw: string,
-    value: string | boolean | null | number | RegExp,
+    value: RegExp | boolean | number | string | null,
 }
 
 interface StringLiteral extends Literal {
@@ -31,7 +31,7 @@ interface NodeWithSource extends acorn.Node {
 
 interface CallExpression extends acorn.Node {
     callee: Identifier,
-    arguments: Array<Literal | Identifier | acorn.Node>,
+    arguments: Array<acorn.Node | Identifier | Literal>,
 }
 
 const isLiteral = (node: acorn.Node): node is Literal => node.type === 'Literal';
@@ -57,7 +57,7 @@ export const resolveImport = async (
 };
 
 export interface ResolveImportOptions {
-    type?: 'esm' | 'cjs',
+    type?: 'cjs' | 'esm',
     extensions?: Array<string>,
     acorn?: acorn.Options,
 }

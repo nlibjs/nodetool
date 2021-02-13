@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import * as path from 'path';
 import * as console from 'console';
+import {Writable} from 'stream';
 import {createCLIArgumentsParser} from './createCLIArgumentsParser';
 import {serializeDefinitionMap} from './serializeDefinitionMap';
 import {getVersion} from './getVersion';
@@ -26,7 +27,7 @@ const parse = createCLIArgumentsParser({
 
 export const cleanupPackageJsonCLI = async (
     args: Array<string>,
-    stdout: NodeJS.WritableStream = process.stdout,
+    stdout: Writable = process.stdout,
 ): Promise<void> => {
     if (args.includes('--help') || args.includes('-h')) {
         stdout.write('cleanup-package-json --file path/to/package.json\n\n');

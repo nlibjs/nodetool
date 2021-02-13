@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import * as path from 'path';
 import * as console from 'console';
+import {Writable} from 'stream';
 import {resolveImportsInDirectory} from './resolveImports';
 import {createCLIArgumentsParser} from './createCLIArgumentsParser';
 import {serializeDefinitionMap} from './serializeDefinitionMap';
@@ -39,7 +40,7 @@ const parse = createCLIArgumentsParser({
 
 export const resolveImportsCLI = async (
     args: Array<string>,
-    stdout: NodeJS.WritableStream = process.stdout,
+    stdout: Writable = process.stdout,
 ): Promise<void> => {
     if (args.includes('--help') || args.includes('-h')) {
         stdout.write('resolve-imports --directory path/to/dir\n\n');

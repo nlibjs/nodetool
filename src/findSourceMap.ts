@@ -1,11 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import {Buffer} from 'buffer';
 import {RawSourceMap} from 'source-map';
 import {getLineRange} from './getLineRange';
 import {isRecord} from './is';
 
 export const loadSourceMapFromJSONString = (
-    jsonString: string | Buffer,
+    jsonString: Buffer | string,
 ): RawSourceMap => {
     const result = JSON.parse(`${Buffer.from(jsonString)}`) as unknown;
     if (

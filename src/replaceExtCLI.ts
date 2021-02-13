@@ -2,6 +2,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as console from 'console';
+import {Writable} from 'stream';
 import {createCLIArgumentsParser} from './createCLIArgumentsParser';
 import {serializeDefinitionMap} from './serializeDefinitionMap';
 import {getVersion} from './getVersion';
@@ -58,7 +59,7 @@ export const replaceExt = async (
 
 export const replaceExtCLI = async (
     args: Array<string>,
-    stdout: NodeJS.WritableStream = process.stdout,
+    stdout: Writable = process.stdout,
 ): Promise<void> => {
     if (args.includes('--help') || args.includes('-h')) {
         stdout.write('replace-ext --directory path/to/dir --entry js/cjs [--entry mjs/js]\n\n');
