@@ -92,7 +92,7 @@ export const getStringArray = (
 
 export const validateParseResult = <T extends CLIArgumentDefinitionMap>(
     definitionMap: T,
-    result: Record<string, boolean | string | Array<string> | undefined>,
+    result: Record<string, Array<string> | boolean | string | undefined>,
 ): result is CLIArgumentMap<T> => {
     for (const name of Object.keys(definitionMap)) {
         const definition = definitionMap[name];
@@ -133,7 +133,7 @@ export const listMarkers = function* (
 };
 
 export interface CLIArgumentDefinition {
-    readonly type: 'boolean' | 'string' | 'string[]' | 'string?' | 'string[]?',
+    readonly type: 'boolean' | 'string?' | 'string' | 'string[]?' | 'string[]',
     readonly description: string,
     readonly alias?: string,
 }
@@ -144,7 +144,7 @@ export type CLIArgumentValue<T extends CLIArgumentDefinition> =
 T['type'] extends 'boolean' ? boolean
 : T['type'] extends 'string' ? string
 : T['type'] extends 'string?' ? string | undefined
-: T['type'] extends 'string[]' | 'string[]?' ? Array<string>
+: T['type'] extends 'string[]?' | 'string[]' ? Array<string>
 : never;
 
 export type CLIArgumentMap<T extends CLIArgumentDefinitionMap> = {
@@ -162,7 +162,7 @@ export const createCLIArgumentsParser = <T extends CLIArgumentDefinitionMap>(
     (
         args: Array<string>,
     ) => {
-        const result: Record<string, string | Array<string> | boolean | undefined> = {};
+        const result: Record<string, Array<string> | boolean | string | undefined> = {};
         for (const name of Object.keys(definitionMap)) {
             const definition = definitionMap[name];
             const markers = [...listMarkers(name, definition)];

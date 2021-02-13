@@ -12,7 +12,7 @@ export const indexen = async function* (
     }: {
         directory: string,
         include: (file: string) => boolean,
-        quote?: '\'' | '"' | '`',
+        quote?: '"' | '\'' | '`',
         order?: CompareFunction<string>,
     },
 ): AsyncGenerator<string> {
