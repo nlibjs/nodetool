@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import MagicString from 'magic-string';
-import {RawSourceMap} from 'source-map';
-import {findSourceMapFileFromUrl, FoundSourceMap} from './findSourceMap';
+import type {RawSourceMap} from 'source-map';
+import type {FoundSourceMap} from './findSourceMap';
+import {findSourceMapFileFromUrl} from './findSourceMap';
 import {normalizeSlash} from './normalizeSlash';
 import {mergeSourceMaps} from './mergeSourceMap';
 

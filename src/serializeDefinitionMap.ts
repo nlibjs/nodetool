@@ -1,4 +1,5 @@
-import {CLIArgumentDefinitionMap, CLIArgumentDefinition, listMarkers} from './createCLIArgumentsParser';
+import type {CLIArgumentDefinitionMap, CLIArgumentDefinition} from './createCLIArgumentsParser';
+import {listMarkers} from './createCLIArgumentsParser';
 
 export const serializeDefinition = function* (
     name: string,

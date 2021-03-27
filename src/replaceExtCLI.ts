@@ -2,7 +2,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as console from 'console';
-import {Writable} from 'stream';
+import type {Writable} from 'stream';
 import {createCLIArgumentsParser} from './createCLIArgumentsParser';
 import {serializeDefinitionMap} from './serializeDefinitionMap';
 import {getVersion} from './getVersion';

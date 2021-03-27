@@ -1,5 +1,5 @@
+import type {RawSourceMap} from 'source-map';
 import {
-    RawSourceMap,
     SourceMapConsumer,
     SourceMapGenerator,
 } from 'source-map';

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import {getFileList} from './listFiles';
 import {normalizeSlash} from './normalizeSlash';
-import {CompareFunction} from './sort';
+import type {CompareFunction} from './sort';
 
 export const indexen = async function* (
     {

@@ -4,7 +4,7 @@ import * as path from 'path';
 import ava from 'ava';
 import {getFileList} from './listFiles';
 import {normalizeSlash} from './normalizeSlash';
-import {RawSourceMap} from 'source-map';
+import type {RawSourceMap} from 'source-map';
 import {exec} from './exec';
 const scriptPath = path.join(__dirname, 'replaceExtCLI.ts');
 
