@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.14 (2021-03-27)
+
+### Bug Fixes
+
+- run removeSourceMap before publish (17cc83f)
+
+
 ## v0.1.13 (2021-03-27)
 
 ### Bug Fixes
