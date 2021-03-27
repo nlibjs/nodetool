@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.1.12 (2021-03-27)
+
+### Features
+
+- add keep option to cleanup-package-json (cb4737e)
+
+### Dependency Upgrades
+
+- upgrade dependencies (#91) (94bd9cd)
+
+
 ## v0.1.11 (2020-10-04)
 
 ### Dependency Upgrades
