@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.15 (2021-03-27)
+
+### Dependency Upgrades
+
+- setup githooks (e50e237)
+
+
 ## v0.1.14 (2021-03-27)
 
 ### Bug Fixes
