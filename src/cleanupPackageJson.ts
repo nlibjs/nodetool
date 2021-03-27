@@ -3,7 +3,7 @@ import * as fs from 'fs';
 /**
  * https://docs.npmjs.com/configuring-npm/package-json.html
  */
-export const npmDocumentedFields = [
+const npmDocumentedFields = [
     'name',
     'version',
     'description',
@@ -41,20 +41,24 @@ export const npmDocumentedFields = [
  * https://nodejs.org/api/modules.html
  * https://nodejs.org/api/esm.html
  */
-export const nodejsDocumentedFields = [
+const nodejsDocumentedFields = [
     'type',
     'imports',
     'exports',
 ];
 
-export const unnecessaryFields = [
+const unnecessaryFields = [
     'scripts',
     'devDependencies',
 ];
 
-export const isPackageJSONRequiredKey = (
+const isPackageJSONRequiredKey = (
     key: string,
+    keep: Array<string>,
 ): boolean => {
+    if (keep.includes(key)) {
+        return true;
+    }
     if (unnecessaryFields.includes(key)) {
         return false;
     }
@@ -67,29 +71,37 @@ export const isPackageJSONRequiredKey = (
     return false;
 };
 
-export const cleanupPackageJSON = <T extends Record<string, unknown>>(
+interface CleanupPackageJSONOptions {
+    keep?: Array<string>,
+}
+
+const cleanupPackageJSON = <T extends Record<string, unknown>>(
     packageJSON: T,
+    {keep = []}: CleanupPackageJSONOptions = {},
 ): Partial<T> => {
     const result: Partial<T> = {};
     for (const key of Object.keys(packageJSON) as Array<keyof T>) {
-        if (isPackageJSONRequiredKey(key as string)) {
+        if (isPackageJSONRequiredKey(key as string, keep)) {
             result[key] = packageJSON[key];
         }
     }
     return result;
 };
 
+interface CleanupPackageJSONFileOptions extends CleanupPackageJSONOptions {
+    indent?: number,
+}
+
 export const cleanupPackageJSONFile = async (
     packageJSONPath: string,
-    indent = 4,
+    {indent = 4, ...options}: CleanupPackageJSONFileOptions = {},
 ) => {
     await fs.promises.writeFile(
         packageJSONPath,
         JSON.stringify(
             cleanupPackageJSON(
-                JSON.parse(
-                    await fs.promises.readFile(packageJSONPath, 'utf8'),
-                ) as Record<string, unknown>,
+                JSON.parse(await fs.promises.readFile(packageJSONPath, 'utf8')) as Record<string, unknown>,
+                options,
             ),
             null,
             indent,

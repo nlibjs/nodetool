@@ -13,6 +13,10 @@ const parse = createCLIArgumentsParser({
         alias: 'f',
         description: 'A path to a package.json',
     },
+    keep: {
+        type: 'string[]?',
+        description: 'Specify keys to keep in output',
+    },
     help: {
         type: 'boolean',
         alias: 'h',
@@ -37,8 +41,8 @@ export const cleanupPackageJsonCLI = async (
     } else if (args.includes('--version') || args.includes('-v')) {
         stdout.write(`${getVersion(path.join(__dirname, '../package.json'))}\n`);
     } else {
-        const props = parse(args);
-        await cleanupPackageJSONFile(path.resolve(props.file));
+        const {file, ...options} = parse(args);
+        await cleanupPackageJSONFile(path.resolve(file), options);
     }
 };
 
