@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.16 (2021-03-27)
+
+### Styles
+
+- fix eslint errors (550bc27)
+
+
 ## v0.1.15 (2021-03-27)
 
 ### Dependency Upgrades
