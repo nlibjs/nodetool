@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.13 (2021-03-27)
+
+### Bug Fixes
+
+- scripts is required (091bfb3)
+
+
 ## v0.1.12 (2021-03-27)
 
 ### Features
