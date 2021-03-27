@@ -21,7 +21,8 @@
     },
     "files": [
         "lib",
-        "!*.test.*"
+        "!*.test.*",
+        "!*.map"
     ],
     "bin": {
         "indexen": "./lib/indexenCLI.js",

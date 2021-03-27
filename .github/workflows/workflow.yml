@@ -127,6 +127,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           registry-url: https://registry.npmjs.org
+      - run: npx ts-node src/removeSourceMapCLI.ts --directory lib
       - run: npx ts-node src/cleanupPackageJsonCLI.ts --file package.json
       - run: npm publish
         env:
