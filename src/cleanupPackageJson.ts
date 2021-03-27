@@ -48,7 +48,6 @@ const nodejsDocumentedFields = [
 ];
 
 const unnecessaryFields = [
-    'scripts',
     'devDependencies',
 ];
 

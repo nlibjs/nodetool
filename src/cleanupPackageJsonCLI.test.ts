@@ -10,6 +10,7 @@ ava('cleanup package.json', async (t) => {
     const packageJsonPath = path.join(directory, 'a.json');
     await afs.writeFile(packageJsonPath, JSON.stringify({
         name: 'foo',
+        scripts: {},
         exports: 'bar',
         ava: '',
         eslintConfig: '',
@@ -20,6 +21,7 @@ ava('cleanup package.json', async (t) => {
         await afs.readFile(packageJsonPath, 'utf8'),
         JSON.stringify({
             name: 'foo',
+            scripts: {},
             exports: 'bar',
         }, null, 4),
     );
