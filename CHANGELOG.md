@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.1.17 (2021-03-28)
+
+### Features
+
+- remove-sourcemap accepts multiple directories (524bac5)
+
+### Dependency Upgrades
+
+- npm audit fix (aabd833)
+
+
 ## v0.1.16 (2021-03-27)
 
 ### Styles
