@@ -7,18 +7,35 @@ const scriptPath = path.join(__dirname, 'removeSourceMapCLI.ts');
 
 ava('remove sourcemap lines', async (t) => {
     const directory = await afs.mkdtemp(path.join(os.tmpdir(), 'findSourceMap'));
-    const sourceFile = path.join(directory, 'input.js');
-    await afs.writeFile(sourceFile, [
-        'foo',
+    const dir1 = path.join(directory, 'dir1');
+    await afs.mkdir(dir1);
+    const dir2 = path.join(directory, 'dir2');
+    await afs.mkdir(dir2);
+    const sourceFile1 = path.join(dir1, 'input.js');
+    await afs.writeFile(sourceFile1, [
+        'foo1',
         '//# sourceMappingURL=foo.js.map',
-        'bar',
+        'bar1',
     ].join('\n'));
-    await exec(`npx ts-node ${scriptPath} --directory ${directory}`);
+    const sourceFile2 = path.join(dir2, 'input.js');
+    await afs.writeFile(sourceFile2, [
+        'foo2',
+        '//# sourceMappingURL=foo.js.map',
+        'bar2',
+    ].join('\n'));
+    await exec(`npx ts-node ${scriptPath} --directory ${dir1} --directory ${dir2}`);
     t.is(
-        await afs.readFile(sourceFile, 'utf8'),
+        await afs.readFile(sourceFile1, 'utf8'),
         [
-            'foo',
-            'bar',
+            'foo1',
+            'bar1',
+        ].join('\n'),
+    );
+    t.is(
+        await afs.readFile(sourceFile2, 'utf8'),
+        [
+            'foo2',
+            'bar2',
         ].join('\n'),
     );
 });

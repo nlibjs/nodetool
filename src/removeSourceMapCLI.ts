@@ -13,9 +13,9 @@ import {getLineRange} from './getLineRange';
 
 const parse = createCLIArgumentsParser({
     directory: {
-        type: 'string',
+        type: 'string[]',
         alias: 'd',
-        description: 'A directory removeSourceMap processes',
+        description: 'Directories removeSourceMap processes',
     },
     ext: {
         type: 'string[]?',
@@ -83,9 +83,11 @@ export const removeSourceMapCLI = async (
             exclude: props.exclude,
         });
         const promises: Array<Promise<void>> = [];
-        for await (const file of listFiles(path.resolve(props.directory))) {
-            if (include(file)) {
-                promises.push(removeSourceMap(file));
+        for (const directory of props.directory) {
+            for await (const file of listFiles(path.resolve(directory))) {
+                if (include(file)) {
+                    promises.push(removeSourceMap(file));
+                }
             }
         }
         await Promise.all(promises);
