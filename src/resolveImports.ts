@@ -4,7 +4,6 @@ import * as acorn from 'acorn';
 import * as walk from 'acorn-walk';
 import type {SourceMap} from 'magic-string';
 import MagicString from 'magic-string';
-import {listFiles} from './listFiles';
 import {normalizeSlash} from './normalizeSlash';
 import {resolveModule} from './resolveModule';
 import {findSourceMap} from './findSourceMap';
@@ -131,18 +130,4 @@ export const resolveImportsInFile = async (
     } else {
         await fs.promises.writeFile(file, result.code);
     }
-};
-
-export const resolveImportsInDirectory = async (
-    directory: string,
-    include: (file: string) => boolean,
-    options?: ResolveImportOptions,
-): Promise<void> => {
-    const promises: Array<ReturnType<typeof resolveImportsInFile>> = [];
-    for await (const file of listFiles(directory)) {
-        if (include(file)) {
-            promises.push(resolveImportsInFile(file, options));
-        }
-    }
-    await Promise.all(promises);
 };

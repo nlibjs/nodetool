@@ -18,7 +18,7 @@ ava('resolve static imports', async (t) => {
         'import * as c from \'./b/c.js\';',
         'import * as d from \'d\';',
     ].join('\n'));
-    await exec(`npx ts-node ${scriptPath} --directory ${directory}`);
+    await exec(`npx ts-node ${scriptPath} --include '${directory}/**/*.js'`);
     t.is(
         await afs.readFile(sourceFile, 'utf8'),
         [
@@ -43,7 +43,7 @@ ava('resolve static exports', async (t) => {
         'export * from \'./b/c.js\';',
         'export * from \'d\';',
     ].join('\n'));
-    await exec(`npx ts-node ${scriptPath} --directory ${directory}`);
+    await exec(`npx ts-node ${scriptPath} --include '${directory}/**/*.js'`);
     t.is(
         await afs.readFile(sourceFile, 'utf8'),
         [
@@ -68,7 +68,7 @@ ava('resolve dynamic imports', async (t) => {
         'const c = import(\'./b/c.js\');',
         'const d = import(\'d\');',
     ].join('\n'));
-    await exec(`npx ts-node ${scriptPath} --directory ${directory}`);
+    await exec(`npx ts-node ${scriptPath} --include '${directory}/**/*.js'`);
     t.is(
         await afs.readFile(sourceFile, 'utf8'),
         [
@@ -93,7 +93,7 @@ ava('resolve require', async (t) => {
         'const c = require(\'./b/c.js\');',
         'const d = require(\'d\');',
     ].join('\n'));
-    await exec(`npx ts-node ${scriptPath} --directory ${directory} --cjs`);
+    await exec(`npx ts-node ${scriptPath} --include '${directory}/**/*.js' --cjs`);
     t.is(
         await afs.readFile(sourceFile, 'utf8'),
         [
