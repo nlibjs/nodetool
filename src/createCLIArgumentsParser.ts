@@ -137,7 +137,7 @@ const validateParseResult = <T extends CLIArgumentDefinitionMap>(
     return true;
 };
 
-const listMarkers = function* (
+export const listMarkers = function* (
     name: string,
     definition: CLIArgumentDefinition,
 ): Generator<string> {

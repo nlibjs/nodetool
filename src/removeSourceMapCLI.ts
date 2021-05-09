@@ -3,13 +3,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as console from 'console';
 import type {Writable} from 'stream';
-import * as fg from 'fast-glob';
 import {createCLIArgumentsParser} from './createCLIArgumentsParser';
 import {serializeDefinitionMap} from './serializeDefinitionMap';
 import {getVersion} from './getVersion';
 import {SourceMapLeftPartRegExp, SourceMapKeyword} from './findSourceMap';
 import {getLineRange} from './getLineRange';
 import {fileSearchArgumentDefinition} from './nlibfgCLI';
+import {listFiles} from './listFiles';
 
 const parse = createCLIArgumentsParser({
     ...fileSearchArgumentDefinition,
@@ -63,7 +63,7 @@ export const removeSourceMapCLI = async (
     } else {
         const props = parse(args);
         const promises: Array<Promise<void>> = [];
-        for await (const file of fg.stream(props.include, {cwd: props.cwd, ignore: props.exclude, absolute: true})) {
+        for await (const file of listFiles(props)) {
             promises.push(removeSourceMap(`${file}`));
         }
         await Promise.all(promises);

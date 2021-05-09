@@ -2,12 +2,12 @@
 import * as path from 'path';
 import * as console from 'console';
 import type {Writable} from 'stream';
-import * as fg from 'fast-glob';
 import {resolveImportsInFile} from './resolveImports';
 import {createCLIArgumentsParser} from './createCLIArgumentsParser';
 import {serializeDefinitionMap} from './serializeDefinitionMap';
 import {getVersion} from './getVersion';
 import {fileSearchArgumentDefinition} from './nlibfgCLI';
+import {listFiles} from './listFiles';
 
 const parse = createCLIArgumentsParser({
     ...fileSearchArgumentDefinition,
@@ -42,7 +42,7 @@ export const resolveImportsCLI = async (
         const props = parse(args);
         const promises: Array<Promise<void>> = [];
         const type = props.cjs ? 'cjs' : 'esm';
-        for await (const file of fg.stream(props.include, {cwd: props.cwd, ignore: props.exclude, absolute: true})) {
+        for await (const file of listFiles(props)) {
             promises.push(resolveImportsInFile(`${file}`, {type}));
         }
         await Promise.all(promises);

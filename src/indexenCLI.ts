@@ -3,12 +3,12 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as console from 'console';
 import type {Writable} from 'stream';
-import * as fg from 'fast-glob';
 import {createCLIArgumentsParser} from './createCLIArgumentsParser';
 import {serializeDefinitionMap} from './serializeDefinitionMap';
 import {getVersion} from './getVersion';
 import {fileSearchArgumentDefinition} from './nlibfgCLI';
 import {dictionaryAsc} from './sort';
+import {listFiles} from './listFiles';
 
 const parse = createCLIArgumentsParser({
     ...fileSearchArgumentDefinition,
@@ -73,7 +73,7 @@ export const indexenCLI = async (
         const outputDirectory = path.dirname(output);
         const sources = new Set<string>();
         const extensions = props.ext ? [] : ['.cjs', '.mjs', '.jsx', '.tsx', '.js', '.ts'];
-        for await (const item of fg.stream(props.include, {cwd, ignore: props.exclude, absolute: true})) {
+        for await (const item of listFiles(props)) {
             const file = `${item}`;
             if (!file.endsWith('.d.ts')) {
                 sources.add(getImportSource(file, extensions, outputDirectory));
