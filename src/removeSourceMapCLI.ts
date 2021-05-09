@@ -3,28 +3,16 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as console from 'console';
 import type {Writable} from 'stream';
+import * as fg from 'fast-glob';
 import {createCLIArgumentsParser} from './createCLIArgumentsParser';
 import {serializeDefinitionMap} from './serializeDefinitionMap';
 import {getVersion} from './getVersion';
-import {createFileFilter} from './createFileFilter';
-import {listFiles} from './listFiles';
 import {SourceMapLeftPartRegExp, SourceMapKeyword} from './findSourceMap';
 import {getLineRange} from './getLineRange';
+import {fileSearchArgumentDefinition} from './nlibfgCLI';
 
 const parse = createCLIArgumentsParser({
-    directory: {
-        type: 'string[]',
-        alias: 'd',
-        description: 'Directories removeSourceMap processes',
-    },
-    ext: {
-        type: 'string[]?',
-        description: 'Specify extensions',
-    },
-    exclude: {
-        type: 'string[]?',
-        description: 'Specify patterns to exclude',
-    },
+    ...fileSearchArgumentDefinition,
     help: {
         type: 'boolean',
         alias: 'h',
@@ -37,9 +25,7 @@ const parse = createCLIArgumentsParser({
     },
 });
 
-export const removeSourceMapLines = (
-    source: string,
-): string => {
+export const removeSourceMapLines = (source: string): string => {
     let code = source;
     let offset = code.length;
     while (0 <= offset) {
@@ -58,12 +44,10 @@ export const removeSourceMapLines = (
 
 export const removeSourceMap = async (
     file: string,
-): Promise<void> => {
-    await fs.promises.writeFile(
-        file,
-        removeSourceMapLines(await fs.promises.readFile(file, 'utf8')),
-    );
-};
+): Promise<void> => await fs.promises.writeFile(
+    file,
+    removeSourceMapLines(await fs.promises.readFile(file, 'utf8')),
+);
 
 export const removeSourceMapCLI = async (
     args: Array<string>,
@@ -78,17 +62,9 @@ export const removeSourceMapCLI = async (
         stdout.write(`${getVersion(path.join(__dirname, '../package.json'))}\n`);
     } else {
         const props = parse(args);
-        const include = createFileFilter({
-            ext: props.ext.length ? props.ext : ['js', 'ts', 'cjs', 'mjs'],
-            exclude: props.exclude,
-        });
         const promises: Array<Promise<void>> = [];
-        for (const directory of props.directory) {
-            for await (const file of listFiles(path.resolve(directory))) {
-                if (include(file)) {
-                    promises.push(removeSourceMap(file));
-                }
-            }
+        for await (const file of fg.stream(props.include, {cwd: props.cwd, ignore: props.exclude, absolute: true})) {
+            promises.push(removeSourceMap(`${file}`));
         }
         await Promise.all(promises);
     }

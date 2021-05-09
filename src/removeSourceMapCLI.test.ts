@@ -23,7 +23,7 @@ ava('remove sourcemap lines', async (t) => {
         '//# sourceMappingURL=foo.js.map',
         'bar2',
     ].join('\n'));
-    await exec(`npx ts-node ${scriptPath} --directory ${dir1} --directory ${dir2}`);
+    await exec(`npx ts-node ${scriptPath} --include '${dir1}/**/*.js' --include '${dir2}/**/*.js'`);
     t.is(
         await afs.readFile(sourceFile1, 'utf8'),
         [
