@@ -1,6 +1,6 @@
 import * as util from 'util';
 
-export const listMarkerIndex = function* (
+const listMarkerIndex = function* (
     {markers, args}: {
         markers: Array<string>,
         args: Array<string>,
@@ -14,12 +14,22 @@ export const listMarkerIndex = function* (
     }
 };
 
-export const getBoolean = (
+const useIndex = (usedIndex: Set<number>, ...indexes: Array<number>) => {
+    for (const index of indexes) {
+        if (usedIndex.has(index)) {
+            throw new Error(`UseSameOptionTwice: ${index}`);
+        }
+        usedIndex.add(index);
+    }
+};
+
+const getBoolean = (
     props: {
         name: string,
         markers: Array<string>,
         args: Array<string>,
     },
+    usedIndex: Set<number>,
 ): boolean => {
     const indexIterator = listMarkerIndex(props);
     const result = indexIterator.next();
@@ -29,16 +39,18 @@ export const getBoolean = (
     if (!indexIterator.next().done) {
         throw new Error(`DuplicatedFlag: --${props.name}`);
     }
+    useIndex(usedIndex, result.value);
     return true;
 };
 
-export const getString = (
+const getString = (
     props: {
         name: string,
         markers: Array<string>,
         args: Array<string>,
         optional: boolean,
     },
+    usedIndex: Set<number>,
 ): string | undefined => {
     const indexIterator = listMarkerIndex(props);
     const result = indexIterator.next();
@@ -60,16 +72,18 @@ export const getString = (
     if (value.startsWith('-')) {
         throw new Error(`InvalidValue: --${props.name}`);
     }
+    useIndex(usedIndex, index, index + 1);
     return value;
 };
 
-export const getStringArray = (
+const getStringArray = (
     props: {
         name: string,
         markers: Array<string>,
         args: Array<string>,
         optional: boolean,
     },
+    usedIndex: Set<number>,
 ): Array<string> => {
     const result: Array<string> = [];
     const {args} = props;
@@ -82,6 +96,7 @@ export const getStringArray = (
         if (value.startsWith('-')) {
             throw new Error(`InvalidValue: --${props.name}`);
         }
+        useIndex(usedIndex, index, index + 1);
         result.push(value);
     }
     if (!props.optional && result.length === 0) {
@@ -90,7 +105,7 @@ export const getStringArray = (
     return result;
 };
 
-export const validateParseResult = <T extends CLIArgumentDefinitionMap>(
+const validateParseResult = <T extends CLIArgumentDefinitionMap>(
     definitionMap: T,
     result: Record<string, Array<string> | boolean | string | undefined>,
 ): result is CLIArgumentMap<T> => {
@@ -122,7 +137,7 @@ export const validateParseResult = <T extends CLIArgumentDefinitionMap>(
     return true;
 };
 
-export const listMarkers = function* (
+const listMarkers = function* (
     name: string,
     definition: CLIArgumentDefinition,
 ): Generator<string> {
@@ -156,25 +171,22 @@ export interface CLIArgumentsParser<T extends CLIArgumentDefinitionMap> {
     (args: Array<string>): CLIArgumentMap<T>,
 }
 
-export const createCLIArgumentsParser = <T extends CLIArgumentDefinitionMap>(
-    definitionMap: T,
-) => Object.defineProperty(
-    (
-        args: Array<string>,
-    ) => {
+export const createCLIArgumentsParser = <T extends CLIArgumentDefinitionMap>(definitionMap: T) => Object.defineProperty(
+    (args: Array<string>) => {
         const result: Record<string, Array<string> | boolean | string | undefined> = {};
+        const usedIndex = new Set<number>();
         for (const name of Object.keys(definitionMap)) {
             const definition = definitionMap[name];
             const markers = [...listMarkers(name, definition)];
             switch (definition.type) {
             case 'boolean':
-                result[name] = getBoolean({name, markers, args});
+                result[name] = getBoolean({name, markers, args}, usedIndex);
                 break;
             case 'string':
-                result[name] = getString({name, markers, args, optional: false});
+                result[name] = getString({name, markers, args, optional: false}, usedIndex);
                 break;
             case 'string?':
-                result[name] = getString({name, markers, args, optional: true});
+                result[name] = getString({name, markers, args, optional: true}, usedIndex);
                 break;
             default:
                 result[name] = getStringArray({
@@ -182,8 +194,12 @@ export const createCLIArgumentsParser = <T extends CLIArgumentDefinitionMap>(
                     markers,
                     args,
                     optional: definition.type.endsWith('?'),
-                });
+                }, usedIndex);
             }
+        }
+        const unusedOptions = args.filter((_, index) => !usedIndex.has(index));
+        if (0 < unusedOptions.length) {
+            throw new Error(`UnusedOption: ${unusedOptions.join(' ')}`);
         }
         if (validateParseResult(definitionMap, result)) {
             return result;

@@ -5,7 +5,7 @@ ava('boolean → false', (t) => {
     const parse = createCLIArgumentsParser({
         foo: {type: 'boolean', alias: 'a', description: 'foo'},
     });
-    t.deepEqual(parse(['']), {foo: false});
+    t.deepEqual(parse([]), {foo: false});
 });
 ava('boolean → true', (t) => {
     const parse = createCLIArgumentsParser({
@@ -150,4 +150,13 @@ ava('string[]? → []', (t) => {
         foo: {type: 'string[]?', alias: 'a', description: 'foo'},
     });
     t.deepEqual(parse([]), {foo: []});
+});
+ava('UnusedOption', (t) => {
+    const parse = createCLIArgumentsParser({
+        foo: {type: 'string?', alias: 'a', description: 'foo'},
+    });
+    t.throws(
+        () => parse(['--bar', 'bar2']),
+        {message: 'UnusedOption: --bar bar2'},
+    );
 });
