@@ -25,6 +25,7 @@
         "!*.map"
     ],
     "bin": {
+        "nlibfg": "./lib/nlibfgCLI.js",
         "indexen": "./lib/indexenCLI.js",
         "resolve-imports": "./lib/resolveImportsCLI.js",
         "replace-ext": "./lib/replaceExtCLI.js",
@@ -46,6 +47,7 @@
     "dependencies": {
         "acorn": "8.2.4",
         "acorn-walk": "8.1.0",
+        "fast-glob": "3.2.5",
         "magic-string": "0.25.7",
         "picomatch": "2.2.3",
         "source-map": "0.7.3"
