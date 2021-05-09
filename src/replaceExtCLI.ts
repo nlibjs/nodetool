@@ -9,13 +9,10 @@ import {getVersion} from './getVersion';
 import {listFiles} from './listFiles';
 import {findSourceMap} from './findSourceMap';
 import {updateSourceMap} from './updateSourceMap';
+import {fileSearchArgumentDefinition} from './nlibfgCLI';
 
 const parse = createCLIArgumentsParser({
-    directory: {
-        type: 'string',
-        alias: 'd',
-        description: 'A directory replaceExt processes',
-    },
+    ...fileSearchArgumentDefinition,
     entry: {
         type: 'string[]',
         alias: 'e',
@@ -73,15 +70,11 @@ export const replaceExtCLI = async (
         const mapping = new Map(
             props.entry.map((entry) => entry.split('/').map((ext) => `.${ext}`) as [string, string]),
         );
-        for await (const file of listFiles(path.resolve(props.directory))) {
+        for await (const file of listFiles(props)) {
             const ext = path.extname(file);
             const replacement = mapping.get(ext);
             if (replacement) {
-                await replaceExt({
-                    file,
-                    from: ext,
-                    to: replacement,
-                });
+                await replaceExt({file, from: ext, to: replacement});
             }
         }
     }
