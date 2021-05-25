@@ -47,7 +47,7 @@
         "acorn": "8.2.4",
         "acorn-walk": "8.1.0",
         "magic-string": "0.25.7",
-        "picomatch": "2.2.3",
+        "picomatch": "2.3.0",
         "source-map": "0.7.3"
     },
     "devDependencies": {
