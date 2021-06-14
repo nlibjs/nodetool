@@ -44,7 +44,7 @@
         "version:add": "git add ."
     },
     "dependencies": {
-        "acorn": "8.3.0",
+        "acorn": "8.4.0",
         "acorn-walk": "8.1.0",
         "magic-string": "0.25.7",
         "picomatch": "2.3.0",
