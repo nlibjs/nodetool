@@ -25,6 +25,7 @@
         "!*.map"
     ],
     "bin": {
+        "nlibfg": "./lib/nlibfgCLI.js",
         "indexen": "./lib/indexenCLI.js",
         "resolve-imports": "./lib/resolveImportsCLI.js",
         "replace-ext": "./lib/replaceExtCLI.js",
@@ -33,8 +34,8 @@
     },
     "scripts": {
         "build": "run-s build:*",
-        "build:indexen": "ts-node src/indexenCLI.ts --input src --output src/index.ts",
-        "build:tsc": "tsc",
+        "build:indexen": "ts-node src/indexenCLI.ts --include 'src/**/*.ts' --exclude '**/*.test.ts' --output src/index.ts",
+        "build:tsc": "tsc --project tsconfig.build.json",
         "test": "run-s test:*",
         "test:type": "tsc --noEmit",
         "test:unit": "ava",
@@ -46,6 +47,7 @@
     "dependencies": {
         "acorn": "8.4.1",
         "acorn-walk": "8.1.0",
+        "fast-glob": "3.2.5",
         "magic-string": "0.25.7",
         "picomatch": "2.3.0",
         "source-map": "0.7.3"

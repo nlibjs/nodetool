@@ -2,26 +2,15 @@
 import * as path from 'path';
 import * as console from 'console';
 import type {Writable} from 'stream';
-import {resolveImportsInDirectory} from './resolveImports';
+import {resolveImportsInFile} from './resolveImports';
 import {createCLIArgumentsParser} from './createCLIArgumentsParser';
 import {serializeDefinitionMap} from './serializeDefinitionMap';
 import {getVersion} from './getVersion';
-import {createFileFilter} from './createFileFilter';
+import {fileSearchArgumentDefinition} from './nlibfgCLI';
+import {listFiles} from './listFiles';
 
 const parse = createCLIArgumentsParser({
-    directory: {
-        type: 'string',
-        alias: 'd',
-        description: 'A directory resolveImports processes',
-    },
-    ext: {
-        type: 'string[]?',
-        description: 'Specify extensions',
-    },
-    exclude: {
-        type: 'string[]?',
-        description: 'Specify patterns to exclude',
-    },
+    ...fileSearchArgumentDefinition,
     cjs: {
         type: 'boolean',
         description: 'Resolve the commonjs require() statements',
@@ -51,16 +40,12 @@ export const resolveImportsCLI = async (
         stdout.write(`${getVersion(path.join(__dirname, '../package.json'))}\n`);
     } else {
         const props = parse(args);
-        await resolveImportsInDirectory(
-            path.resolve(props.directory),
-            createFileFilter({
-                ext: props.ext.length ? props.ext : ['js', 'ts', 'cjs', 'mjs'],
-                exclude: props.exclude,
-            }),
-            {
-                type: props.cjs ? 'cjs' : 'esm',
-            },
-        );
+        const promises: Array<Promise<void>> = [];
+        const type = props.cjs ? 'cjs' : 'esm';
+        for await (const file of listFiles(props)) {
+            promises.push(resolveImportsInFile(`${file}`, {type}));
+        }
+        await Promise.all(promises);
     }
 };
 

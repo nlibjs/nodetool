@@ -1,27 +1,11 @@
-import * as path from 'path';
-import {promises as afs} from 'fs';
-import {dictionaryAsc} from './sort';
+import * as fg from 'fast-glob';
 
-export const listFiles = async function* (
-    directory: string,
-): AsyncGenerator<string> {
-    for await (const dirent of await afs.opendir(directory)) {
-        const file = path.join(directory, dirent.name);
-        if (dirent.isDirectory()) {
-            yield* listFiles(file);
-        } else {
-            yield file;
-        }
-    }
-};
+interface ListFilesProps {
+    cwd?: string,
+    include: Array<string>,
+    exclude: Array<string>,
+}
 
-export const getFileList = async (
-    directory: string,
-    order = dictionaryAsc,
-): Promise<Array<string>> => {
-    const list: Array<string> = [];
-    for await (const file of listFiles(directory)) {
-        list.push(file);
-    }
-    return list.sort(order);
-};
+export const listFiles = (
+    {cwd, include, exclude: ignore}: ListFilesProps,
+): AsyncGenerator<string> => fg.stream(include, {cwd, ignore, absolute: true}) as unknown as AsyncGenerator<string>;

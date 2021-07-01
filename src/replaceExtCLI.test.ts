@@ -1,11 +1,12 @@
 import {promises as afs} from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as fg from 'fast-glob';
 import ava from 'ava';
-import {getFileList} from './listFiles';
 import {normalizeSlash} from './normalizeSlash';
 import type {RawSourceMap} from 'source-map';
 import {exec} from './exec';
+import {dictionaryAsc} from './sort';
 const scriptPath = path.join(__dirname, 'replaceExtCLI.ts');
 
 ava('replace the extensions', async (t) => {
@@ -18,9 +19,11 @@ ava('replace the extensions', async (t) => {
     await afs.writeFile(path.join(directory, 'b/d.js'), '');
     await afs.writeFile(path.join(directory, 'b/e.cjs'), '');
     await afs.writeFile(path.join(directory, 'b/f.mjs'), '');
-    await exec(`npx ts-node ${scriptPath} --directory ${directory} --entry ts/txt -e cjs/log`);
+    await exec(`npx ts-node ${scriptPath} --include '${directory}/**/*' --entry ts/txt -e cjs/log`);
     t.deepEqual(
-        (await getFileList(directory)).map((file) => normalizeSlash(path.relative(directory, file))),
+        (await fg(`${directory}/**/*`))
+        .sort(dictionaryAsc)
+        .map((file) => normalizeSlash(path.relative(directory, file))),
         [
             'a.d.txt',
             'a.js',
@@ -55,9 +58,11 @@ ava('update sourcemap', async (t) => {
         path.join(directory, 'a.js.map'),
         JSON.stringify(sourceMapData, null, 4),
     );
-    await exec(`npx ts-node ${scriptPath} --directory ${directory} --entry js/cjs`);
+    await exec(`npx ts-node ${scriptPath} --include '${directory}/**/*' --entry js/cjs`);
     t.deepEqual(
-        (await getFileList(directory)).map((file) => normalizeSlash(path.relative(directory, file))),
+        (await fg(`${directory}/**/*`))
+        .sort(dictionaryAsc)
+        .map((file) => normalizeSlash(path.relative(directory, file))),
         [
             'a.cjs',
             'a.js.map',
